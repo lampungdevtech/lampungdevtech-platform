@@ -17,7 +17,6 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
-  "nxCloudId": "67f8554893349566d443d6e2",
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
@@ -79,6 +78,14 @@
       "application": {
         "style": "tailwind",
         "linter": "eslint"
+      }
+    }
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
       }
     }
   }
