@@ -1,10 +1,10 @@
 {
-  "name": "@lampung-dev/web-e2e",
+  "name": "@lampung-devtech/web-e2e",
   "version": "0.0.1",
   "private": true,
   "nx": {
     "implicitDependencies": [
-      "@lampung-dev/web"
+      "@lampung-devtech/web"
     ]
   }
 }

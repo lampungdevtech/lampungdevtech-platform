@@ -1,5 +1,5 @@
 export default {
-  displayName: '@lampung-dev/web',
+  displayName: '@lampung-devtechtech/web',
   preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
