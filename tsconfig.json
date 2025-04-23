@@ -4,12 +4,6 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/lampung-dev-platform-e2e"
-    },
-    {
-      "path": "./apps/lampung-dev-platform"
-    },
-    {
       "path": "./apps/web-e2e"
     },
     {
