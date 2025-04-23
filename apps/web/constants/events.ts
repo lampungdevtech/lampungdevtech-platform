@@ -1,7 +1,7 @@
 export const events = [
   {
     id: 1,
-    title: "Casual Meetup - Data Analyst Journey",
+    title: "Casual Meetup: Mobile Career",
     slug: "casual-meetup-data-analyst-journey",
     date: "15 Mei 2025",
     time: "09:00 - 12:00",

@@ -173,6 +173,14 @@ export function HomePage() {
               </Button>
             </div>
           )}
+          <div className="text-center" data-aos="fade-up">
+            <Button size="lg" asChild>
+              <Link href="/events">
+                Lihat Lebih Banyak Acara
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 

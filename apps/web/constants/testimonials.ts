@@ -2,7 +2,7 @@ export const testimonials = [
   {
     name: 'Wahyu Ahmad Kautsar',
     role: 'ASN di BPS Pesawaran Lampung dan Bisnis Owner',
-    content: 'Terimakasih kepada LampungDevTech telah menyelenggarakan kegiatan tech meetup, sangat bermanfaat bagi saya dan teman-teman yang hadir, begitu juga dengan narasumber ilmu nya daging semua.',
+    content: 'Terimakasih kepada LampungDevTech telah menyelenggarakan kegiatan Tech Meetup, sangat bermanfaat bagi saya dan teman-teman yang hadir, begitu juga dengan narasumber ilmu nya daging semua.',
     image: 'https://media.licdn.com/dms/image/v2/D5603AQGJKuQnR9yWpg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1724922686607?e=1750896000&v=beta&t=0--iDKTfVIJlb_IWpdkIw3zkbU9pjUnbLnSJG88jNJw',
   },
   {
