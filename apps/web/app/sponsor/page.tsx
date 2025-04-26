@@ -2,11 +2,9 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Instagram } from "lucide-react";
 import { previousSponsors } from '@/constants/sponsors';
 
 export default function SponsorPage() {
-
   return (
     <div className="min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,19 +21,27 @@ export default function SponsorPage() {
           <h2 className="text-2xl font-bold text-center mb-8">Sponsor Kami</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {previousSponsors.map((sponsor, index) => (
-              <Card key={index} className="p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow">
-                <img
-                  src={sponsor.logo}
-                  alt={sponsor.name}
-                  className="w-20 h-20 object-cover rounded-lg mb-4"
-                />
-                <h3 className="font-semibold mb-2">{sponsor.name}</h3>
-                <Button variant="ghost" size="icon" asChild className="text-muted-foreground hover:text-primary">
-                  <a href={sponsor.instagram} target="_blank" rel="noopener noreferrer">
-                    <Instagram className="h-5 w-5" />
-                  </a>
-                </Button>
-              </Card>
+              <div key={index} className="flex items-center justify-center h-40">
+                <a 
+                  href={sponsor.instagram} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="relative block w-32 h-32 group"
+                >
+                  {sponsor.type && (
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-sm opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 whitespace-nowrap z-10">
+                      {sponsor.type}
+                    </span>
+                  )}
+                  <div className="relative z-0 w-full h-full flex items-center justify-center">
+                    <img
+                      src={sponsor.logo}
+                      alt={sponsor.name}
+                      className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-110"
+                    />
+                  </div>
+                </a>
+              </div>
             ))}
           </div>
         </div>
