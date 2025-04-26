@@ -2,7 +2,9 @@
   "name": "@lampung-devtech/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start:web": "npx nx start web"
+  },
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
