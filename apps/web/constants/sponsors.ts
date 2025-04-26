@@ -1,42 +1,56 @@
 export const previousSponsors = [
   {
+    name: "Jetorbit",
+    instagram: "https://www.instagram.com/jetorbit",
+    logo: "https://www.jetorbit.com/wp-content/uploads/2019/05/hosting-murah-jetorbit-logo.svg",
+    type: "Infrastructure Partner"
+  },
+  {
     name: "Codeathome.id",
     instagram: "https://instagram.com/codeathome",
-    logo: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&q=80&w=200",
+    logo: "/assets/sponsors/codeathome-logo.svg",
+    type: "Codeathome.id"
   },
   {
     name: "ngooding.id",
     instagram: "https://instagram.com/ngooding.id",
-    logo: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=200",
+    logo: "/assets/sponsors/ngoding-id-logo.svg",
+    type: "Ngooding"
   },
   {
     name: "Dicoding",
     instagram: "https://instagram.com/dicoding",
-    logo: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=200",
+    logo: "/assets/community-partnerts/dicoding-logo.svg",
+    type: "Dicoding"
   },
   {
     name: "BuildWithAngga",
     instagram: "https://instagram.com/buildwithangga",
-    logo: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?auto=format&fit=crop&q=80&w=200",
+    logo: "https://buildwithangga.com/themes/front/images/logo_bwa_text.svg",
+    type: "BuildWithAngga"
   },
   {
     name: "Mitra Aslam Beauty",
     instagram: "https://instagram.com/mitraaslambeauty",
-    logo: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=200",
+    logo: "/assets/sponsors/mitra-aslam-beauty-logo.svg",
+    type: "Mitra Aslam Beauty"
   },
   {
     name: "IM3 Metro",
     instagram: "https://instagram.com/im3metro",
-    logo: "https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&q=80&w=200",
+    logo: "/assets/sponsors/im3-metro-logo.svg",
+    type: "IM3 Metro"
   },
   {
     name: "Cuberaksi",
     instagram: "instagram.com/cube.raksi",
-    logo: "https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?auto=format&fit=crop&q=80&w=200",
+    logo: "/assets/sponsors/cuberaksi-logo.svg",
+    type: "Cuberaksi"
   },
   {
     name: "Klinik Kosasih Lampung",
     instagram: "https://www.instagram.com/klinikkosasihlampung",
-    logo: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=200",
+    logo: "https://klinikkosasih.com/wp-content/uploads/2024/04/cropped-cropped-logo-removebg-preview-150x150.png",
+    type: "Klinik Kosasih Lampung"
   }
 ];
