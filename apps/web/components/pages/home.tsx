@@ -47,7 +47,8 @@ export function HomePage() {
             <p className="text-xl md:text-2xl mb-2 max-w-3xl mx-auto">
               Bergabunglah dengan komunitas developer teknologi terbesar di Lampung. Belajar, berbagi, dan berkembang bersama.
             </p>
-            <p className="text-lg mb-8 text-primary-foreground/80">#SangBumiRuwaJurai</p>
+            <p className="text-lg text-primary-foreground/80">#SangBumiRuwaJurai</p>
+            <p className="text-lg mb-8 text-primary-foreground/80">#TabikPun!</p>
             <div className="flex justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
               <Button 
                 size="icon"
