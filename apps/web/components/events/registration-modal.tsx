@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/components/ui/use-toast';
 import {
   Dialog,
   DialogContent,
@@ -12,20 +13,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Loader2 } from 'lucide-react';
 
 interface RegistrationModalProps {
+  eventId: string;
   eventTitle: string;
-  onSubmit: (data: { fullName: string; email: string }) => void;
   trigger?: React.ReactNode;
 }
 
 export function RegistrationModal({
+  eventId,
   eventTitle,
-  onSubmit,
   trigger,
 }: RegistrationModalProps) {
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -33,9 +36,45 @@ export function RegistrationModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-    setIsOpen(false);
-    setFormData({ fullName: '', email: '' });
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/events/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          eventId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to register');
+      }
+
+      toast({
+        title: 'Registration Successful!',
+        description: 'You have successfully registered for the event.',
+      });
+
+      setIsOpen(false);
+      setFormData({ fullName: '', email: '' });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Registration Failed',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Failed to register for the event',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,6 +104,7 @@ export function RegistrationModal({
                 setFormData({ ...formData, fullName: e.target.value })
               }
               required
+              disabled={isLoading}
             />
           </div>
           <div className="space-y-2">
@@ -77,10 +117,18 @@ export function RegistrationModal({
                 setFormData({ ...formData, email: e.target.value })
               }
               required
+              disabled={isLoading}
             />
           </div>
-          <Button type="submit" className="w-full">
-            Kirim Pendaftaran
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Mendaftar...
+              </>
+            ) : (
+              'Kirim Pendaftaran'
+            )}
           </Button>
         </form>
       </DialogContent>

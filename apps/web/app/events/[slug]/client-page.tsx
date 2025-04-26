@@ -22,6 +22,7 @@ import {
 import { RegistrationModal } from '@/components/events/registration-modal';
 
 interface Event {
+  id: string;
   title: string;
   date: string;
   time: string;
@@ -77,14 +78,6 @@ const ClientEventPage: FC<ClientEventPageProps> = ({ event }) => {
       '_blank',
       'noopener,noreferrer'
     );
-  };
-
-  const handleRegistration = async (data: {
-    fullName: string;
-    email: string;
-  }) => {
-    // Here you would typically handle the registration with your backend
-    console.log('Registration submitted:', data);
   };
 
   return (
@@ -270,8 +263,8 @@ const ClientEventPage: FC<ClientEventPageProps> = ({ event }) => {
 
                 {event.status === 'upcoming' ? (
                   <RegistrationModal
+                    eventId={event.id}
                     eventTitle={event.title}
-                    onSubmit={handleRegistration}
                   />
                 ) : (
                   <Button variant="outline" className="w-full">
