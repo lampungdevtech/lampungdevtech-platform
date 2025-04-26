@@ -3,30 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Building2, Users, Globe, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const partners = [
-  {
-    name: "Payungi",
-    type: "Mitra Komunitas",
-    description: "Kampung Kreatif - Payungi hadir atas inisiatif warga berdaya yang percaya perubahan bisa dilakukan dengan gotong royong.",
-    logo: "/payungi-logo.jpg",
-    website: "https://payungi.org"
-  },
-  {
-    name: "Kedai Rumah Belajar",
-    type: "Mitra Komunitas",
-    description: "Kedai Rumah Belajar | Coffee & Space",
-    logo: "/rumah-belajar-logo.jpg",
-    website: "https://www.instagram.com/rumah.belajar__"
-  },
-  {
-    name: "Suaka Marga Technopreneur",
-    type: "Mitra Komunitas",
-    description: "Kolaborasi dalam pengembangan ekosistem startup di Lampung.",
-    logo: "https://media.licdn.com/dms/image/v2/D560BAQFY8QKaA3rmYg/company-logo_200_200/company-logo_200_200/0/1730430724989?e=1750896000&v=beta&t=q8CC8nHdf9BVZW0kOcR9t8UYOK7PLw1dqMix9dJy6Vg",
-    website: "https://startuplampung.com"
-  }
-];
+import { partners } from '@/constants/partners';
 
 export default function PartnersPage() {
   return (
@@ -74,7 +51,7 @@ export default function PartnersPage() {
                 <img
                   src={partner.logo}
                   alt={partner.name}
-                  className="w-16 h-16 rounded-lg object-cover"
+                  className="w-24 h-16 rounded-lg object-cover"
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
