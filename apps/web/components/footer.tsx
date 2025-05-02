@@ -56,32 +56,44 @@ const Footer = () => {
                   <FaTelegramPlane className="h-5 w-5" />
                 </a>
               </Button>
-              <Button variant="ghost" size="icon" asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="hover:text-accent-foreground/80"
+              >
                 <a
                   href="https://instagram.com/lampungdevtech"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary-foreground/80"
                 >
                   <Instagram className="h-5 w-5" />
                 </a>
               </Button>
-              <Button variant="ghost" size="icon" asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="hover:text-accent-foreground/80"
+              >
                 <a
                   href="https://www.threads.net/@lampungdevtech"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary-foreground/80"
                 >
                   <Threads className="h-5 w-5" />
                 </a>
               </Button>
-              <Button variant="ghost" size="icon" asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="hover:text-accent-foreground/80"
+              >
                 <a
                   href="https://www.youtube.com/@lampungdevtech"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary-foreground/80"
                 >
                   <Youtube className="h-5 w-5" />
                 </a>
