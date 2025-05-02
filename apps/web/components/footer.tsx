@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { Github, Twitter, Linkedin } from 'lucide-react';
+import { Github, Twitter, Linkedin, Instagram, Youtube } from 'lucide-react';
 import { FaTelegramPlane } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
+import Threads from '@/components/icons/threads';
 
 const Footer = () => {
   return (
@@ -53,6 +54,36 @@ const Footer = () => {
                   className="hover:text-accent-foreground/80"
                 >
                   <FaTelegramPlane className="h-5 w-5" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <a
+                  href="https://instagram.com/lampungdevtech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary-foreground/80"
+                >
+                  <Instagram className="h-5 w-5" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <a
+                  href="https://www.threads.net/@lampungdevtech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary-foreground/80"
+                >
+                  <Threads className="h-5 w-5" />
+                </a>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <a
+                  href="https://www.youtube.com/@lampungdevtech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary-foreground/80"
+                >
+                  <Youtube className="h-5 w-5" />
                 </a>
               </Button>
             </div>
