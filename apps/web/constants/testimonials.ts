@@ -9,6 +9,6 @@ export const testimonials = [
     name: 'Ayu Anisa',
     role: 'Desainer Grafis dan Ilustrator Freelance',
     content: 'Kegiatan Tech Meetup nya seru banget jadi bisa ketemu dengan pekerja design grafis dan ilustrator lainnya serta developer teknologi juga, jadi bener-bener antusias karena jarang banget di Bandar Lampung ada komunitas seperti ini yang bermanfaat untuk semuanya.',
-    image: 'https://media.licdn.com/dms/image/v2/D5635AQFSErjdq1qtDw/profile-framedphoto-shrink_200_200/profile-framedphoto-shrink_200_200/0/1726658592366?e=1745899200&v=beta&t=uVWbBU6-QQ6_ypzAKBZZREOxMexm6zYfLGmomsXgaHw',
+    image: 'https://media.licdn.com/dms/image/v2/D5635AQFSErjdq1qtDw/profile-framedphoto-shrink_200_200/profile-framedphoto-shrink_200_200/0/1726658592366?e=1746784800&v=beta&t=6-2o5D5hjS5kLghhOxLxqNlvsbdPdxfG7-rVv_0BUdk',
   },
 ];
