@@ -62,7 +62,7 @@ export default function ContactPage() {
                   <h3 className="font-semibold mb-1">Telepon</h3>
                   <p className="text-muted-foreground mb-2">Senin - Jumat, 09:00 - 17:00 WIB</p>
                   <a href="tel:+628123456789" className="text-primary hover:underline">
-                    +62 812-3456-789
+                    +62 812-1586-9294
                   </a>
                 </div>
               </div>
@@ -74,9 +74,8 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-semibold mb-1">Lokasi</h3>
                   <p className="text-muted-foreground">
-                    Lampung Digital Hub<br />
-                    Jl. ZA. Pagar Alam No.24<br />
-                    Bandar Lampung, 35145
+                    Bandar Lampung<br />
+                    Metro<br />
                   </p>
                 </div>
               </div>
