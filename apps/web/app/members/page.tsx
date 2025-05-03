@@ -4,66 +4,8 @@ import { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Search, Github, Twitter, Linkedin, Users2 } from "lucide-react";
-
-const members = [
-  {
-    id: 1,
-    name: "Riza Fahmi",
-    role: "Senior Frontend Developer",
-    company: "Tech Corp",
-    location: "Bandar Lampung",
-    skills: ["React", "TypeScript", "Node.js"],
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200",
-    social: {
-      github: "https://github.com/rizafahmi",
-      twitter: "https://twitter.com/rizafahmi",
-      linkedin: "https://linkedin.com/in/rizafahmi"
-    }
-  },
-  {
-    id: 2,
-    name: "Sarah Drasana",
-    role: "Backend Developer",
-    company: "Startup XYZ",
-    location: "Metro",
-    skills: ["Python", "Django", "PostgreSQL"],
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200",
-    social: {
-      github: "https://github.com/sarahdrasana",
-      twitter: "https://twitter.com/sarahdrasana",
-      linkedin: "https://linkedin.com/in/sarahdrasana"
-    }
-  },
-  {
-    id: 3,
-    name: "Ahmad Zaky",
-    role: "Full Stack Developer",
-    company: "Freelancer",
-    location: "Bandar Lampung",
-    skills: ["JavaScript", "React", "Node.js", "MongoDB"],
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200",
-    social: {
-      github: "https://github.com/ahmadzaky",
-      twitter: "https://twitter.com/ahmadzaky",
-      linkedin: "https://linkedin.com/in/ahmadzaky"
-    }
-  },
-  {
-    id: 4,
-    name: "Linda Putri",
-    role: "UI/UX Designer",
-    company: "Design Studio",
-    location: "Pringsewu",
-    skills: ["Figma", "Adobe XD", "UI Design", "UX Research"],
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200",
-    social: {
-      github: "https://github.com/lindaputri",
-      twitter: "https://twitter.com/lindaputri",
-      linkedin: "https://linkedin.com/in/lindaputri"
-    }
-  }
-];
+import { Search, Github, Twitter, Linkedin, Users2, Instagram } from "lucide-react";
+import { members } from '@/constants/members';
 
 export default function MembersPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -142,6 +84,20 @@ export default function MembersPage() {
                   <Button variant="ghost" size="icon" asChild>
                     <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer">
                       <Linkedin className="h-4 w-4" />
+                    </a>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    asChild
+                    className="hover:text-accent-foreground/80"
+                  >
+                    <a
+                      href={member.social.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Instagram className="h-5 w-5" />
                     </a>
                   </Button>
                 </div>
