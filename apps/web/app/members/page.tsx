@@ -1,20 +1,30 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Search, Github, Twitter, Linkedin, Users2, Instagram } from "lucide-react";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import {
+  Search,
+  Github,
+  Twitter,
+  Linkedin,
+  Users2,
+  Instagram,
+} from 'lucide-react';
 import { members } from '@/constants/members';
 
 export default function MembersPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredMembers = members.filter(member =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredMembers = members.filter(
+    (member) =>
+      member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.skills.some((skill) =>
+        skill.toLowerCase().includes(searchQuery.toLowerCase())
+      )
   );
 
   return (
@@ -23,7 +33,9 @@ export default function MembersPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Anggota Komunitas</h1>
-          <p className="text-muted-foreground">Temukan dan terhubung dengan sesama developer di Lampung</p>
+          <p className="text-muted-foreground">
+            Temukan dan terhubung dengan sesama developer di Lampung
+          </p>
         </div>
 
         {/* Search */}
@@ -52,7 +64,9 @@ export default function MembersPage() {
                   <div>
                     <h3 className="text-lg font-semibold">{member.name}</h3>
                     <p className="text-primary">{member.role}</p>
-                    <p className="text-sm text-muted-foreground">{member.company}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {member.company}
+                    </p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -72,17 +86,29 @@ export default function MembersPage() {
                 </div>
                 <div className="flex space-x-2">
                   <Button variant="ghost" size="icon" asChild>
-                    <a href={member.social.github} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={member.social.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <Github className="h-4 w-4" />
                     </a>
                   </Button>
                   <Button variant="ghost" size="icon" asChild>
-                    <a href={member.social.twitter} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={member.social.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <Twitter className="h-4 w-4" />
                     </a>
                   </Button>
                   <Button variant="ghost" size="icon" asChild>
-                    <a href={member.social.linkedin} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={member.social.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <Linkedin className="h-4 w-4" />
                     </a>
                   </Button>
@@ -112,13 +138,15 @@ export default function MembersPage() {
                 <Search className="h-12 w-12 absolute bottom-0 right-0 text-primary" />
               </div>
             </div>
-            <h3 className="text-2xl font-semibold mb-2">Tidak Ada Anggota Ditemukan</h3>
+            <h3 className="text-2xl font-semibold mb-2">
+              Tidak Ada Anggota Ditemukan
+            </h3>
             <p className="text-muted-foreground mb-8">
               Tidak ada anggota yang sesuai dengan kriteria pencarian Anda.
               {searchQuery && ` Coba cari dengan kata kunci yang berbeda.`}
             </p>
             {searchQuery && (
-              <Button onClick={() => setSearchQuery("")}>
+              <Button onClick={() => setSearchQuery('')}>
                 Reset Pencarian
               </Button>
             )}
