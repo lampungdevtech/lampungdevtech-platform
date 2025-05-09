@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { Github, Twitter, Linkedin } from 'lucide-react';
+import { Github, Twitter, Linkedin, Instagram, Youtube } from 'lucide-react';
 import { FaTelegramPlane } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
+import Threads from '@/components/icons/threads';
 
 const Footer = () => {
   return (
@@ -11,8 +12,8 @@ const Footer = () => {
           <div className="md:col-span-4 space-y-4">
             <h3 className="text-2xl font-bold">LampungDevTech</h3>
             <p className="text-primary-foreground/80">
-              Komunitas developer teknologi di Lampung untuk berbagi pengetahuan,
-              pengalaman, dan kesempatan.
+              Komunitas developer teknologi di Lampung untuk berbagi
+              pengetahuan, pengalaman, dan kesempatan.
             </p>
             <div className="flex space-x-4">
               <Button variant="ghost" size="icon" asChild>
@@ -55,6 +56,48 @@ const Footer = () => {
                   <FaTelegramPlane className="h-5 w-5" />
                 </a>
               </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="hover:text-accent-foreground/80"
+              >
+                <a
+                  href="https://instagram.com/lampungdevtech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Instagram className="h-5 w-5" />
+                </a>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="hover:text-accent-foreground/80"
+              >
+                <a
+                  href="https://www.threads.net/@lampungdevtech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Threads className="h-5 w-5" />
+                </a>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                asChild
+                className="hover:text-accent-foreground/80"
+              >
+                <a
+                  href="https://www.youtube.com/@lampungdevtech"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Youtube className="h-5 w-5" />
+                </a>
+              </Button>
             </div>
             <p className="text-sm text-primary-foreground/80">
               © 2025 LampungDevTech. All rights reserved.
@@ -65,17 +108,26 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4">Komunitas</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/about"
+                  className="hover:text-primary-foreground/80"
+                >
                   Tentang Kami
                 </Link>
               </li>
               <li>
-                <Link href="/vision-mission" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/vision-mission"
+                  className="hover:text-primary-foreground/80"
+                >
                   Visi & Misi
                 </Link>
               </li>
               <li>
-                <Link href="/partners" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/partners"
+                  className="hover:text-primary-foreground/80"
+                >
                   Mitra Komunitas
                 </Link>
               </li>
@@ -96,12 +148,18 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/showcase" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/showcase"
+                  className="hover:text-primary-foreground/80"
+                >
                   Showcase
                 </Link>
               </li>
               <li>
-                <Link href="/resources" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/resources"
+                  className="hover:text-primary-foreground/80"
+                >
                   Resources
                 </Link>
               </li>
@@ -112,17 +170,26 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/code-of-conduct" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/code-of-conduct"
+                  className="hover:text-primary-foreground/80"
+                >
                   Kode Etik
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/privacy"
+                  className="hover:text-primary-foreground/80"
+                >
                   Privasi
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/terms"
+                  className="hover:text-primary-foreground/80"
+                >
                   Ketentuan
                 </Link>
               </li>
@@ -133,7 +200,10 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4">Hubungi Kami</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/contact" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/contact"
+                  className="hover:text-primary-foreground/80"
+                >
                   Kontak
                 </Link>
               </li>
@@ -143,7 +213,10 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/sponsor" className="hover:text-primary-foreground/80">
+                <Link
+                  href="/sponsor"
+                  className="hover:text-primary-foreground/80"
+                >
                   Sponsor
                 </Link>
               </li>
@@ -154,7 +227,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-primary-foreground/10">
           <p className="text-center text-primary-foreground/80">
             Situs web lampungdev.tech ini {` `}
-            <a 
+            <a
               href="https://github.com/lampungdevtech/lampungdevtech-platform"
               target="_blank"
               rel="noopener noreferrer"
