@@ -19,8 +19,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { RegistrationModal } from '@/components/events/registration-modal';
 
 interface Event {
+  id: string;
   title: string;
   date: string;
   time: string;
@@ -62,7 +64,6 @@ const ClientEventPage: FC<ClientEventPageProps> = ({ event }) => {
   const handleSocialShare = (platform: string) => {
     const text = encodeURIComponent(shareData.text);
     const url = encodeURIComponent(shareData.url);
-    // const title = encodeURIComponent(shareData.title);
 
     const shareUrls = {
       twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
@@ -160,7 +161,8 @@ const ClientEventPage: FC<ClientEventPageProps> = ({ event }) => {
               <h2 className="text-2xl font-semibold mb-4">Tentang Acara</h2>
               <div className="prose prose-neutral dark:prose-invert max-w-none">
                 <p className="text-muted-foreground">
-                  {event.description}
+                  {event.description ||
+                    `Bergabunglah dalam ${event.title} untuk meningkatkan kemampuan pengembangan software Anda. Acara ini dirancang untuk berbagi pengetahuan dan pengalaman dalam dunia teknologi.`}
                 </p>
 
                 <h3 className="text-xl font-semibold mt-6 mb-3">
@@ -169,7 +171,13 @@ const ClientEventPage: FC<ClientEventPageProps> = ({ event }) => {
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                   {event.learningPoints?.map((point, index) => (
                     <li key={index}>{point}</li>
-                  ))}
+                  )) ||
+                    [
+                      'Fundamental dan konsep dasar',
+                      'Best practices dan pattern',
+                      'Tips dan trik dari praktisi',
+                      'Studi kasus dan implementasi praktis',
+                    ].map((point, index) => <li key={index}>{point}</li>)}
                 </ul>
 
                 <h3 className="text-xl font-semibold mt-6 mb-3">
@@ -178,7 +186,12 @@ const ClientEventPage: FC<ClientEventPageProps> = ({ event }) => {
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                   {event.requirements?.map((req, index) => (
                     <li key={index}>{req}</li>
-                  ))}
+                  )) ||
+                    [
+                      'Laptop dengan spesifikasi standar',
+                      'Pengetahuan dasar pemrograman',
+                      'Semangat belajar yang tinggi',
+                    ].map((req, index) => <li key={index}>{req}</li>)}
                 </ul>
 
                 {event.coordinates && (
@@ -249,10 +262,10 @@ const ClientEventPage: FC<ClientEventPageProps> = ({ event }) => {
                 )}
 
                 {event.status === 'upcoming' ? (
-                  <Button className="w-full">
-                    Daftar Sekarang
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </Button>
+                  <RegistrationModal
+                    eventId={event.id}
+                    eventTitle={event.title}
+                  />
                 ) : (
                   <Button variant="outline" className="w-full">
                     Lihat Dokumentasi
