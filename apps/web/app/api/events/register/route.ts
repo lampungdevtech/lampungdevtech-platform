@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { fullName, email, eventId } = await request.json();
@@ -25,7 +27,7 @@ export async function POST(request: Request) {
       .select()
       .single();
 
-    if (profileError) {
+    if (profileError || !profile) {
       return NextResponse.json(
         { error: 'Failed to create profile' },
         { status: 500 }

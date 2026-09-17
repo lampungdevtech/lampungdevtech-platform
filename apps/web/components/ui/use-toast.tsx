@@ -1,7 +1,1 @@
-import { Toast } from '@/components/ui/toast';
-
-export function useToast() {
-  return {
-    toast: Toast,
-  };
-}
+export * from '@/hooks/use-toast';

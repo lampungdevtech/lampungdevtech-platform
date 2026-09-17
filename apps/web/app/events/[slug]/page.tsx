@@ -68,7 +68,11 @@ export default async function EventDetailPage({
 
   return (
     <ClientEventPage
-      event={{ ...event, status: event.status as 'upcoming' | 'past' }}
+      event={{
+        ...event,
+        id: String(event.id),
+        status: event.status as 'upcoming' | 'past',
+      }}
     />
   );
 }
