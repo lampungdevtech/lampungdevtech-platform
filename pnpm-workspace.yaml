@@ -1,0 +1,19 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+  - 'cypress'
+  - 'nx'
+  - 'sharp'
+  - 'unrs-resolver'
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@swc/core': true
+  'cypress': true
+  'nx': true
+  'sharp': true
+  'unrs-resolver': true
