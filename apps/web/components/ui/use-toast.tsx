@@ -1,1 +1,1 @@
-export * from '@/hooks/use-toast';
+export * from '@lampung-devtech/shared-ui/components/use-toast';

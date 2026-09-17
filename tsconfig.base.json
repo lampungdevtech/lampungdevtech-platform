@@ -16,6 +16,11 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["development"]
+    "customConditions": ["development"],
+    "baseUrl": ".",
+    "paths": {
+      "@lampung-devtech/shared-ui": ["packages/shared-ui/src/index.ts"],
+      "@lampung-devtech/shared-ui/*": ["packages/shared-ui/src/*"]
+    }
   }
 }
