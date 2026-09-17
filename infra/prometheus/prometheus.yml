@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'pos-order-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8081']
+
+  - job_name: 'auth-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+
+  - job_name: 'inventory-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8082']
+
+  - job_name: 'finance-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:8083']
