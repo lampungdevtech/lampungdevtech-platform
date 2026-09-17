@@ -5,7 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Github } from "lucide-react";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const { data: session, status } = useSession();

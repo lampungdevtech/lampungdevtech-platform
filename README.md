@@ -1,142 +1,82 @@
-# LampungDevTech Platform
+# LampungDev
 
-<div align="center">
-  <img src="apps/web/public/lampungdevtech-logo.svg" alt="LampungDevTech Logo" width="80" height="80" />
-  <h3>Platform Komunitas Developer Teknologi Lampung</h3>
-  <p>Wadah kolaborasi, belajar, dan bertumbuh bagi para talenta teknologi di Lampung.</p>
-</div>
+<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
 
----
+✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
 
-## 🌟 Fitur Utama (Key Features)
+[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/next?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
 
-- **🌐 Dukungan Bilingual Penuh (Bilingual Support / i18n)**:
-  - **Bahasa Indonesia** (Default) dengan prefix URL `/id`
-  - **English** dengan prefix URL `/en`
-  - Redireksi otomatis dari `/` ke `/id` (atau bahasa yang tersimpan)
-  - Komponen **Language Switcher** interaktif dengan bendera negara (🇮🇩 Indonesia, 🇺🇸 English)
-  - Persistensi bahasa otomatis via cookie `NEXT_LOCALE` saat navigasi
-  - SEO-friendly canonical URLs dan alternate hreflang tags (`/id` dan `/en`)
-- **📱 Desain Modern & Responsif**: Dibangun dengan Tailwind CSS, Radix UI primitives, dan dark/light mode toggle.
-- **⚡ Monorepo Terstruktur**: Menggunakan Nx dan pnpm workspace dengan pemisahan paket UI (`@lampung-devtech/shared-ui`) terinspirasi arsitektur monorepo Zero One Group.
-- **🔐 Autentikasi & Integrasi Backend**: Terintegrasi dengan NextAuth dan Supabase.
+## Finish your CI setup
 
----
+[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/EpuW7n53qQ)
 
-## 🏗️ Struktur Arsitektur Monorepo (Workspace Architecture)
 
-```
-lampungdevtech-platform/
-├── apps/
-│   └── web/                                # Aplikasi Next.js 15 (App Router)
-│       ├── app/
-│       │   ├── [locale]/                   # Rute ter-lokalisasi (/id, /en)
-│       │   │   ├── layout.tsx              # Root localized layout & SEO alternates
-│       │   │   ├── page.tsx                # Halaman Beranda (Home)
-│       │   │   ├── about/                  # Tentang Kami
-│       │   │   ├── events/                 # Daftar & detail acara komunitas
-│       │   │   ├── members/                # Direktori anggota
-│       │   │   ├── dashboard/              # Dashboard member & pengaturan
-│       │   │   └── not-found.tsx           # Halaman 404 ter-lokalisasi
-│       │   └── api/                        # Next.js API route handlers (/api/...)
-│       ├── components/                     # Komponen UI & Language Switcher
-│       │   ├── language-switcher.tsx       # Dropdown bendera 🇮🇩 & 🇺🇸
-│       │   ├── navbar.tsx                  # Header navigasi bilingual
-│       │   └── footer.tsx                  # Footer navigasi bilingual
-│       ├── i18n/
-│       │   ├── routing.ts                  # Routing config next-intl (/id, /en)
-│       │   └── request.ts                  # Resolver kamus terjemahan dinamis
-│       ├── locales/
-│       │   ├── id/common.json              # Kamus terjemahan Bahasa Indonesia
-│       │   └── en/common.json              # Kamus terjemahan English
-│       └── middleware.ts                   # Chained middleware (i18n + NextAuth)
-├── packages/
-│   └── shared-ui/                          # @lampung-devtech/shared-ui
-│       └── src/                            # Reusable Radix/Tailwind components
-├── pnpm-workspace.yaml                     # Konfigurasi workspace pnpm
-└── package.json                            # Root workspace scripts & dependencies
+## Run tasks
+
+To run the dev server for your app, use:
+
+```sh
+npx nx dev web
 ```
 
----
+To create a production bundle:
 
-## 🌐 Panduan Internasionalisasi (i18n Guide)
-
-### Menambahkan / Mengubah Terjemahan
-File terjemahan disimpan dalam format JSON di:
-- `apps/web/locales/id/common.json` (Bahasa Indonesia)
-- `apps/web/locales/en/common.json` (English)
-
-Contoh penggunaan dalam komponen:
-```tsx
-import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/routing';
-
-export function ExampleComponent() {
-  const t = useTranslations('nav');
-
-  return (
-    <nav>
-      <Link href="/about">{t('about')}</Link>
-    </nav>
-  );
-}
+```sh
+npx nx build web
 ```
 
-### Navigasi Ter-lokalisasi
-Gunakan `Link`, `useRouter`, dan `usePathname` dari `@/i18n/routing` agar prefix locale `/id` atau `/en` otomatis disertakan dan dipertahankan.
+To see all available targets to run for a project, run:
 
----
-
-## 🚀 Memulai Pengembangan (Getting Started)
-
-### Prasyarat
-- Node.js 20+ atau 24+
-- `pnpm` v9+ atau v11+
-
-### Instalasi
-```bash
-# Clone repository
-git clone https://github.com/lampungdevtech/lampungdevtech-platform.git
-cd lampungdevtech-platform
-
-# Install dependencies menggunakan pnpm
-pnpm install
+```sh
+npx nx show project web
 ```
 
-### Menjalankan Development Server
-```bash
-# Menjalankan aplikasi web
-pnpm start:web
-# atau
-pnpm exec nx dev web
-```
-Aplikasi akan tersedia di:
-- `http://localhost:3000/` (otomatis redirect ke `http://localhost:3000/id`)
-- `http://localhost:3000/id` (Versi Bahasa Indonesia)
-- `http://localhost:3000/en` (Versi English)
+These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
 
-### Build & Testing
-```bash
-# Type check TypeScript
-npx tsc --project apps/web/tsconfig.json --noEmit
+[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
-# Unit testing
-pnpm exec nx test web
+## Add new projects
 
-# Production build
-pnpm exec nx build web
+While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+
+Use the plugin's generator to create new projects.
+
+To generate a new application, use:
+
+```sh
+npx nx g @nx/next:app demo
 ```
 
----
+To generate a new library, use:
 
-## 🤝 Komunitas & Kontribusi
+```sh
+npx nx g @nx/react:lib mylib
+```
 
-Kami menyambut kontribusi dari siapa pun! Untuk bergabung dan berdiskusi:
-- **Telegram Community**: [t.me/lampungdevtech](https://t.me/lampungdevtech)
-- **GitHub**: [github.com/lampungdevtech](https://github.com/lampungdevtech)
-- **Website**: [lampungdev.tech](https://lampungdev.tech)
+You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
 
----
+[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
 
-## 📄 Lisensi
-Dilisensikan di bawah lisensi [MIT](LICENSE).
+
+[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+## Install Nx Console
+
+Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+
+[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+## Useful links
+
+Learn more:
+
+- [Learn more about this workspace setup](https://nx.dev/nx-api/next?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
+- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+And join the Nx community:
+- [Discord](https://go.nx.dev/community)
+- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
+- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
+- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
