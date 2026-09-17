@@ -2,9 +2,6 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
-overrides:
-  postcss: '^8.5.23'
-
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@swc/core'

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { Link } from '@/i18n/routing';
+import Link from 'next/link';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { useSession } from 'next-auth/react';
@@ -18,8 +18,6 @@ import {
 import { Moon, Sun, Menu, X, User, Settings, LogOut, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
-import { LanguageSwitcher } from '@/components/language-switcher';
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -27,12 +25,11 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
-  const t = useTranslations('nav');
 
   const navigation = [
-    { name: t('about'), href: '/about' },
-    { name: t('events'), href: '/events' },
-    { name: t('members'), href: '/members' },
+    { name: 'Tentang Kami', href: '/about' },
+    { name: 'Acara', href: '/events' },
+    { name: 'Anggota', href: '/members' },
   ];
 
   useEffect(() => {
@@ -49,7 +46,7 @@ const Navbar = () => {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-
+    
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -83,14 +80,14 @@ const Navbar = () => {
             <div className="hidden md:flex md:items-center md:space-x-4">
               {navigation.map((item) => (
                 <Link
-                  key={item.href}
+                  key={item.name}
                   href={item.href}
                   className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium"
                 >
                   {item.name}
                 </Link>
               ))}
-
+              
               {session ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -114,53 +111,46 @@ const Navbar = () => {
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard">
                         <User className="mr-2 h-4 w-4" />
-                        {t('dashboard')}
+                        Dashboard
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard/events">
                         <Calendar className="mr-2 h-4 w-4" />
-                        {t('events')}
+                        Events
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard/settings">
                         <Settings className="mr-2 h-4 w-4" />
-                        {t('settings')}
+                        Settings
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut className="mr-2 h-4 w-4" />
-                      {t('logout')}
+                      Log out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
                 <Button variant="outline" asChild className="ml-4">
-                  <Link href="/login">{t('login')}</Link>
+                  <Link href="/login">Masuk / Daftar</Link>
                 </Button>
               )}
-
-              {/* Language Switcher */}
-              <LanguageSwitcher />
-
-              {/* Theme Toggle */}
+              
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                aria-label="Toggle theme"
               >
                 <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
               </Button>
             </div>
 
-            {/* Mobile menu button & actions */}
+            {/* Mobile menu button */}
             <div className="md:hidden flex items-center space-x-2">
-              <LanguageSwitcher />
-
               {session && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -184,30 +174,30 @@ const Navbar = () => {
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard">
                         <User className="mr-2 h-4 w-4" />
-                        {t('dashboard')}
+                        Dashboard
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard/events">
                         <Calendar className="mr-2 h-4 w-4" />
-                        {t('events')}
+                        Events
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard/settings">
                         <Settings className="mr-2 h-4 w-4" />
-                        {t('settings')}
+                        Settings
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut className="mr-2 h-4 w-4" />
-                      {t('logout')}
+                      Log out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-
+              
               <Button
                 ref={toggleButtonRef}
                 variant="ghost"
@@ -236,12 +226,11 @@ const Navbar = () => {
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between p-4 border-b">
-            <span className="text-lg font-semibold">{t('menu')}</span>
+            <span className="text-lg font-semibold">Menu</span>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(false)}
-              aria-label="Close menu"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -250,7 +239,7 @@ const Navbar = () => {
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => (
                 <Link
-                  key={item.href}
+                  key={item.name}
                   href={item.href}
                   className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-primary/5"
                   onClick={() => setIsMenuOpen(false)}
@@ -264,12 +253,12 @@ const Navbar = () => {
                   className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-primary/5"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {t('login')}
+                  Masuk / Daftar
                 </Link>
               )}
             </div>
           </div>
-          <div className="p-4 border-t space-y-2">
+          <div className="p-4 border-t">
             <Button
               variant="ghost"
               className="w-full justify-start"
@@ -280,7 +269,7 @@ const Navbar = () => {
             >
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 mr-2" />
               <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 mr-2" />
-              {theme === 'dark' ? t('lightMode') : t('darkMode')}
+              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
             </Button>
           </div>
         </div>
