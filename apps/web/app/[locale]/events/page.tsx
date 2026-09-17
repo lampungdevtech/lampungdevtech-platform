@@ -1,20 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/routing';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Search, Calendar, MapPin, Clock, FileSearch } from 'lucide-react';
-import { events } from '@/constants/events';
+import { Search, Calendar, MapPin, Clock, FileSearch, Users } from 'lucide-react';
+import { events as defaultEvents } from '@/constants/events';
 import { useTranslations } from 'next-intl';
 
 export default function EventsPage() {
   const t = useTranslations('events');
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('all'); // all, upcoming, past
+  const [eventsList, setEventsList] = useState(defaultEvents);
 
-  const filteredEvents = events.filter((event) => {
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchEvents() {
+      try {
+        const queryParams = new URLSearchParams();
+        if (filter !== 'all') queryParams.set('status', filter);
+        if (searchQuery.trim()) queryParams.set('search', searchQuery.trim());
+
+        const res = await fetch(`/api/events?${queryParams.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.events) {
+            setEventsList(data.events);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch events from API, using fallback:', err);
+      }
+    }
+
+    fetchEvents();
+    return () => {
+      isMounted = false;
+    };
+  }, [filter, searchQuery]);
+
+  const filteredEvents = eventsList.filter((event) => {
     const matchesSearch =
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -71,46 +98,58 @@ export default function EventsPage() {
         {filteredEvents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event) => (
-              <Link href={`/events/${event.slug}`} key={event.id}>
-                <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow">
-                  <div className="h-48 relative">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-4 right-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          event.status === 'upcoming'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
-                            : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
-                        }`}
-                      >
-                        {event.status === 'upcoming'
-                          ? t('statusUpcoming')
-                          : t('statusPast')}
-                      </span>
+              <Link href={`/events/${event.slug}`} key={event.id || (event as any)._id}>
+                <Card className="overflow-hidden h-full hover:shadow-lg transition-shadow flex flex-col justify-between">
+                  <div>
+                    <div className="h-48 relative">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-4 right-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            event.status === 'upcoming'
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
+                              : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'
+                          }`}
+                        >
+                          {event.status === 'upcoming'
+                            ? t('statusUpcoming')
+                            : t('statusPast')}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+                        {event.title}
+                      </h3>
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center text-muted-foreground text-sm">
+                          <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <span>{event.date}</span>
+                        </div>
+                        <div className="flex items-center text-muted-foreground text-sm">
+                          <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <span>{event.time}</span>
+                        </div>
+                        <div className="flex items-center text-muted-foreground text-sm">
+                          <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">{event.location}</span>
+                        </div>
+                        {(event as any).maxCapacity && (
+                          <div className="flex items-center text-muted-foreground text-sm">
+                            <Users className="h-4 w-4 mr-2 flex-shrink-0" />
+                            <span>
+                              {(event as any).maxCapacity - ((event as any).registeredCount || 0)} tiket tersisa
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">
-                      {event.title}
-                    </h3>
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-muted-foreground">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <span>{event.date}</span>
-                      </div>
-                      <div className="flex items-center text-muted-foreground">
-                        <Clock className="h-4 w-4 mr-2" />
-                        <span>{event.time}</span>
-                      </div>
-                      <div className="flex items-center text-muted-foreground">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span>{event.location}</span>
-                      </div>
-                    </div>
+                  <div className="p-6 pt-0">
                     <Button
                       className="w-full"
                       variant={

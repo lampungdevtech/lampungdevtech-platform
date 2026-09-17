@@ -1,69 +1,37 @@
-import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { NextRequest, NextResponse } from 'next/server';
+import { registerToEventService } from '@/services/event.service';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const { fullName, email, eventId } = await request.json();
+    const body = await request.json();
+    const { fullName, name, email, phone, organization, eventId } = body;
 
-    if (!fullName || !email || !eventId) {
+    const participantName = fullName || name;
+
+    if (!participantName || !email || !eventId) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Nama lengkap, email, dan ID event wajib diisi.' },
         { status: 400 }
       );
     }
 
-    // First, create or get the profile
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .upsert(
-        {
-          email,
-          full_name: fullName,
-        },
-        { onConflict: 'email' }
-      )
-      .select()
-      .single();
+    const result = await registerToEventService({
+      eventId,
+      name: participantName,
+      email,
+      phone: phone || '',
+      organization: organization || '',
+    });
 
-    if (profileError || !profile) {
-      return NextResponse.json(
-        { error: 'Failed to create profile' },
-        { status: 500 }
-      );
-    }
-
-    // Then, register for the event
-    const { data: registration, error: registrationError } = await supabase
-      .from('events_participants')
-      .insert({
-        event_id: eventId,
-        profile_id: profile.id,
-        status: 'registered',
-      })
-      .select()
-      .single();
-
-    if (registrationError) {
-      if (registrationError.code === '23505') {
-        return NextResponse.json(
-          { error: 'Already registered for this event' },
-          { status: 409 }
-        );
-      }
-      return NextResponse.json(
-        { error: 'Failed to register for event' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(registration);
-  } catch (error) {
-    console.error('Registration error:', error);
+    return NextResponse.json(result, { status: 201 });
+  } catch (error: any) {
+    console.error('[API /api/events/register] Error:', error.message);
+    const statusCode = error.message.includes('sudah terdaftar') ? 409 : 500;
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: error.message || 'Terjadi kesalahan pada server saat mendaftar.' },
+      { status: statusCode }
     );
   }
 }
