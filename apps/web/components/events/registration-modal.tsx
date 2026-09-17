@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { ExternalLink, Loader2, CheckCircle2, Clock } from 'lucide-react';
 
 interface RegistrationModalProps {
   eventId: string;
@@ -29,9 +29,17 @@ export function RegistrationModal({
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [successData, setSuccessData] = useState<{
+    status: 'REGISTERED' | 'WAITING_LIST';
+    message: string;
+    qrToken?: string;
+  } | null>(null);
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
+    phone: '',
+    organization: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,32 +61,44 @@ export function RegistrationModal({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to register');
+        throw new Error(data.error || 'Gagal mengirim pendaftaran');
       }
 
-      toast({
-        title: 'Registration Successful!',
-        description: 'You have successfully registered for the event.',
+      setSuccessData({
+        status: data.status,
+        message: data.message,
+        qrToken: data.qrToken,
       });
 
-      setIsOpen(false);
-      setFormData({ fullName: '', email: '' });
+      toast({
+        title: data.status === 'REGISTERED' ? 'Pendaftaran Berhasil!' : 'Masuk Waiting List',
+        description: data.message,
+      });
+
+      setFormData({ fullName: '', email: '', phone: '', organization: '' });
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Registration Failed',
+        title: 'Pendaftaran Gagal',
         description:
           error instanceof Error
             ? error.message
-            : 'Failed to register for the event',
+            : 'Gagal melakukan pendaftaran event.',
       });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleModalClose = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      setSuccessData(null);
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleModalClose}>
       <DialogTrigger asChild>
         {trigger || (
           <Button className="w-full">
@@ -87,50 +107,106 @@ export function RegistrationModal({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Daftar Event</DialogTitle>
+          <DialogTitle>{successData ? 'Status Pendaftaran' : 'Form Pendaftaran Event'}</DialogTitle>
           <DialogDescription>
-            Silakan isi form pendaftaran untuk mengikuti event {eventTitle}
+            {successData
+              ? `Konfirmasi keikutsertaan Anda pada acara ${eventTitle}`
+              : `Silakan isi formulir untuk mendaftar acara ${eventTitle}`}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">Nama Lengkap</Label>
-            <Input
-              id="fullName"
-              value={formData.fullName}
-              onChange={(e) =>
-                setFormData({ ...formData, fullName: e.target.value })
-              }
-              required
-              disabled={isLoading}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              required
-              disabled={isLoading}
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Mendaftar...
-              </>
+
+        {successData ? (
+          <div className="py-4 space-y-4 text-center">
+            {successData.status === 'REGISTERED' ? (
+              <div className="flex flex-col items-center space-y-2">
+                <CheckCircle2 className="h-14 w-14 text-green-500" />
+                <h4 className="text-lg font-bold text-green-600 dark:text-green-400">Tiket Terbit!</h4>
+                <p className="text-sm text-muted-foreground px-4">{successData.message}</p>
+                {successData.qrToken && (
+                  <div className="bg-muted p-3 rounded-lg mt-2 text-xs font-mono">
+                    Kode Tiket: <span className="font-bold">{successData.qrToken}</span>
+                  </div>
+                )}
+              </div>
             ) : (
-              'Kirim Pendaftaran'
+              <div className="flex flex-col items-center space-y-2">
+                <Clock className="h-14 w-14 text-amber-500" />
+                <h4 className="text-lg font-bold text-amber-600 dark:text-amber-400">Antrean Waiting List</h4>
+                <p className="text-sm text-muted-foreground px-4">{successData.message}</p>
+              </div>
             )}
-          </Button>
-        </form>
+            <Button className="w-full mt-4" onClick={() => handleModalClose(false)}>
+              Tutup
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Nama Lengkap *</Label>
+              <Input
+                id="fullName"
+                placeholder="Nama Anda"
+                value={formData.fullName}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Aktif *</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="nama@email.com"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Nomor WhatsApp</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="08xxxxxxxxxx"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+                disabled={isLoading}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="organization">Institusi / Perusahaan (Opsional)</Label>
+              <Input
+                id="organization"
+                placeholder="Universitas / Perusahaan"
+                value={formData.organization}
+                onChange={(e) =>
+                  setFormData({ ...formData, organization: e.target.value })
+                }
+                disabled={isLoading}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Memproses Tiket...
+                </>
+              ) : (
+                'Kirim Pendaftaran'
+              )}
+            </Button>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   );

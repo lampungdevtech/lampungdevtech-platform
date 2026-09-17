@@ -1,6 +1,7 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
-import { events } from '@/constants/events';
+import { getEventBySlugService } from '@/services/event.service';
+import ClientEventPage from './client-page';
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -11,7 +12,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const event = events.find((e) => e.slug === slug);
+  const event = await getEventBySlugService(slug);
 
   if (!event) {
     return {
@@ -52,14 +53,11 @@ export async function generateMetadata(
   };
 }
 
-// Split into client and server components
-import ClientEventPage from './client-page';
-
 export default async function EventDetailPage({
   params,
 }: Props) {
   const { slug } = await params;
-  const event = events.find((e) => e.slug === slug);
+  const event = await getEventBySlugService(slug);
 
   if (!event) {
     notFound();
@@ -69,7 +67,8 @@ export default async function EventDetailPage({
     <ClientEventPage
       event={{
         ...event,
-        id: String(event.id),
+        id: String(event.id || event._id),
+        type: event.type || event.category || 'Meetup',
         status: event.status as 'upcoming' | 'past',
       }}
     />
