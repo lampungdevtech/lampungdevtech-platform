@@ -213,38 +213,65 @@ pnpm install
 ```
 
 ### 3. Konfigurasi Environment Variables
-Salin contoh environment file pada aplikasi web:
+Salin template konfigurasi lingkungan dari berkas `.env.example` ke `.env` dan `apps/web/.env.local`:
 ```bash
-cp apps/web/.env.example apps/web/.env.local
+cp .env.example .env
+cp .env.example apps/web/.env.local
 ```
-Sesuaikan konfigurasi MongoDB, NextAuth, dan database sesuai kebutuhan lokal Anda.
+> [!NOTE]
+> Berkas [`.env.example`](.env.example) telah didokumentasikan lengkap dalam bahasa Inggris dan mencakup konfigurasi untuk Web Platform, MongoDB, PostgreSQL, Redis, RabbitMQ, JWT Secret, serta Google OAuth.
 
-### 4. Menjalankan Server Pengembangan (Nx Dev)
-Jalankan aplikasi web menggunakan perintah Nx:
+### 4. Menjalankan Server Pengembangan Web Platform (Nx Dev)
+Jalankan aplikasi web Next.js 15 menggunakan perintah Nx:
 ```bash
-# Menjalankan aplikasi web Next.js 15
+# Menjalankan aplikasi web
 pnpm exec nx dev web
 
 # Atau menggunakan shortcut script
 pnpm start:web
 ```
-Buka browser di:
-- `http://localhost:3000/` (Otomatis dialihkan ke `/id`)
-- `http://localhost:3000/id/events` (Halaman Event Komunitas)
-- `http://localhost:3000/id/pos` (Halaman Solusi POS Kafe)
+Buka browser di endpoint berikut:
+- **Beranda & Komunitas**: `http://localhost:3000/` (Otomatis dialihkan ke `/id`)
+- **Event Management**: `http://localhost:3000/id/events`
+- **Scanner Check-in Tiket Hari-H**: `http://localhost:3000/id/events/check-in`
+- **Solusi Bisnis & Edukasi POS**: `http://localhost:3000/id/pos`
+- **Pendaftaran Mitra POS Kafe**: `http://localhost:3000/id/pos/register`
+- **Portal Super Admin Approval Mitra**: `http://localhost:3000/id/admin/mitra`
+- **Owner Business Portal (BEP & CapEx)**: `http://localhost:3000/id/pos/dashboard`
+- **Terminal Kasir POS (Web Tablet Emulator)**: `http://localhost:3000/id/pos/terminal`
+- **Kitchen Display System (KDS Dapur & Bar)**: `http://localhost:3000/id/pos/kds`
 
 ### 5. Menjalankan Infrastruktur Database Lokal (Docker Compose)
-Untuk menjalankan PostgreSQL, MongoDB, Redis, dan RabbitMQ di komputer lokal:
+Untuk menjalankan PostgreSQL 16, MongoDB 7.0, Redis 7, dan RabbitMQ 3.13 di komputer lokal:
 ```bash
 docker compose up -d
 ```
-Dashboard pendukung akan aktif di:
+Dashboard & koneksi pendukung:
 - **RabbitMQ Management**: `http://localhost:15672` (User: `guest`, Pass: `guest`)
-- **MongoDB**: `localhost:27017`
-- **PostgreSQL**: `localhost:5432`
+- **MongoDB Native**: `localhost:27017`
+- **PostgreSQL**: `localhost:5432` (Database: `pos_db`)
 - **Redis**: `localhost:6379`
 
-### 6. Pengujian, Linting & Build
+### 6. Menjalankan Backend Microservice GoFiber (Hexagonal)
+Pastikan dependensi Docker atau Go telah terinstal, lalu jalankan service:
+```bash
+cd backend
+go run cmd/server/main.go
+# Atau menggunakan Docker:
+docker build -t pos-backend .
+docker run -p 8080:8080 pos-backend
+```
+Service akan aktif di port `8080` (`http://localhost:8080/healthz`).
+
+### 7. Menjalankan Mobile POS Kasir (React Native Expo)
+Untuk menguji aplikasi kasir tablet & mobile di simulator Android, iOS, atau browser:
+```bash
+cd apps/mobile-pos
+pnpm start
+# Tekan 'w' untuk membuka versi web, atau 'a' untuk Android emulator
+```
+
+### 8. Pengujian, Linting & Build
 Gunakan perintah terpadu dari Nx:
 ```bash
 # Validasi tipe TypeScript di seluruh workspace
@@ -256,20 +283,21 @@ pnpm exec nx lint web
 # Jalankan unit tests
 pnpm exec nx test web
 
-# Build bundle produksi
+# Build bundle produksi (menghasilkan 59 halaman)
 pnpm exec nx build web
 ```
 
 ---
 
-## 📚 Dokumentasi Fitur Modular (`/docs`)
+## 📚 Panduan Teknis & Arsitektur Lokal (`/docs`)
 
-Untuk mempelajari atau mengeksekusi implementasi per fitur secara bertahap, silakan rujuk dokumen teknis berikut:
-- 📄 [01. Event Management dengan MongoDB](docs/01-event-management-mongodb.md)
-- 📄 [02. POS Web Platform & Owner Business Portal](docs/02-pos-business-web-platform.md)
-- 📄 [03. Backend Hexagonal Microservices Go + GoFiber](docs/03-pos-backend-hexagonal-microservices.md)
-- 📄 [04. Mobile POS Offline-First (React Native Expo)](docs/04-pos-mobile-offline-first.md)
-- 📄 [05. DevOps, Kubernetes (K8s), & Observability](docs/05-pos-devops-infrastructure-cicd.md)
+Dokumentasi spesifikasi teknis dan panduan implementasi langkah demi langkah disimpan secara lokal pada direktori `/docs` (diabaikan oleh git agar tidak mengotori repositori utama):
+- `docs/01-event-management-mongodb.md` — Spesifikasi Event Management, MongoDB Native, & Kuota Atomik
+- `docs/02-pos-business-web-platform.md` — Spesifikasi Owner Portal, BEP Calculator, & Multi-Cabang
+- `docs/03-pos-backend-hexagonal-microservices.md` — Arsitektur Microservices Hexagonal GoFiber & RabbitMQ
+- `docs/04-pos-mobile-offline-first.md` — Mesin Sinkronisasi Offline SQLite, ULID, & Bluetooth ESC/POS
+- `docs/05-pos-devops-infrastructure-cicd.md` — Spesifikasi Kubernetes (K8s), Docker Compose, & Observability
+- `docs/walkthrough-event.md` — Rangkuman implementasi menyeluruh ekosistem platform
 
 ---
 
