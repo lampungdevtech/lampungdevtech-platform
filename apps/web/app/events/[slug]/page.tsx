@@ -3,15 +3,15 @@ import { notFound } from 'next/navigation';
 import { events } from '@/constants/events';
 
 type Props = {
-  params: { slug: string }
-}
+  params: { slug: string };
+};
 
 export async function generateMetadata(
   props: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const { params } = props;
-  const event = events.find(e => e.slug === params.slug);
+  const event = events.find((e) => e.slug === params.slug);
 
   if (!event) {
     return {
@@ -22,10 +22,14 @@ export async function generateMetadata(
 
   return {
     title: `${event.title} | LampungDevTech`,
-    description: event.description || `Bergabunglah dalam ${event.title} untuk meningkatkan kemampuan pengembangan software Anda.`,
+    description:
+      event.description ||
+      `Bergabunglah dalam ${event.title} untuk meningkatkan kemampuan pengembangan software Anda.`,
     openGraph: {
       title: event.title,
-      description: event.description || `Bergabunglah dalam ${event.title} untuk meningkatkan kemampuan pengembangan software Anda.`,
+      description:
+        event.description ||
+        `Bergabunglah dalam ${event.title} untuk meningkatkan kemampuan pengembangan software Anda.`,
       images: [
         {
           url: event.image,
@@ -40,7 +44,9 @@ export async function generateMetadata(
     twitter: {
       card: 'summary_large_image',
       title: event.title,
-      description: event.description || `Bergabunglah dalam ${event.title} untuk meningkatkan kemampuan pengembangan software Anda.`,
+      description:
+        event.description ||
+        `Bergabunglah dalam ${event.title} untuk meningkatkan kemampuan pengembangan software Anda.`,
       images: [event.image],
     },
   };
@@ -49,12 +55,20 @@ export async function generateMetadata(
 // Split into client and server components
 import ClientEventPage from './client-page';
 
-export default async function EventDetailPage({ params }: { params: { slug: string } }) {
-  const event = events.find(e => e.slug === params.slug);
-  
+export default async function EventDetailPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const event = events.find((e) => e.slug === params.slug);
+
   if (!event) {
     notFound();
   }
 
-  return <ClientEventPage event={{ ...event, status: event.status as 'upcoming' | 'past' }} />;
+  return (
+    <ClientEventPage
+      event={{ ...event, status: event.status as 'upcoming' | 'past' }}
+    />
+  );
 }
