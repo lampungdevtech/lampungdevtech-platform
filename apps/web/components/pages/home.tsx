@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -11,8 +11,11 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { events } from '@/constants/events';
 import { testimonials } from '@/constants/testimonials';
+import { useTranslations } from 'next-intl';
 
 export function HomePage() {
+  const t = useTranslations('home');
+
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -41,15 +44,14 @@ export function HomePage() {
                 className="transform transition-transform duration-300 group-hover:rotate-12 md:w-16 md:h-16"
               />
               <h1 className="text-3xl md:text-5xl font-bold ml-3 md:ml-4 transform transition-transform duration-300 group-hover:scale-105">
-                LampungDevTech
+                {t('hero.title')}
               </h1>
             </div>
             <p className="text-lg md:text-2xl mb-2 max-w-3xl mx-auto px-4">
-              Bergabunglah dengan komunitas developer teknologi terbesar di
-              Lampung. Belajar, berbagi, dan berkembang bersama.
+              {t('hero.subtitle')}
             </p>
             <p className="text-base md:text-lg mb-8 text-primary-foreground/80">
-              #SangBumiRuwaJurai
+              {t('hero.tagline')}
             </p>
             <div
               className="flex flex-col sm:flex-row justify-center gap-4 px-4"
@@ -60,6 +62,7 @@ export function HomePage() {
                 size="icon"
                 className="bg-[#229ED9] hover:bg-[#1d8abf] text-white w-12 h-12 rounded-md transition-all duration-300 hover:scale-110 hover:rotate-12 mx-auto sm:mx-0"
                 asChild
+                aria-label="Telegram"
               >
                 <a
                   href="https://t.me/lampungdevtech"
@@ -75,7 +78,7 @@ export function HomePage() {
                 className="transition-all duration-300 hover:scale-105 hover:shadow-lg w-full sm:w-auto"
                 asChild
               >
-                <Link href="/login">Bergabung Sekarang</Link>
+                <Link href="/login">{t('hero.joinNow')}</Link>
               </Button>
               <Button
                 size="lg"
@@ -83,7 +86,7 @@ export function HomePage() {
                 className="bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary border-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-lg w-full sm:w-auto"
                 asChild
               >
-                <Link href="/about">Pelajari Lebih Lanjut</Link>
+                <Link href="/about">{t('hero.learnMore')}</Link>
               </Button>
             </div>
           </div>
@@ -112,29 +115,29 @@ export function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             <Card className="p-6" data-aos="fade-up" data-aos-delay="0">
               <Calendar className="h-12 w-12 mb-4 text-primary" />
-              <h3 className="text-xl font-semibold mb-2">Acara Rutin</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                {t('features.routineEventsTitle')}
+              </h3>
               <p className="text-muted-foreground">
-                Casual meetup, Work From Cafe (WFC) dan Tech Meetup rutin untuk
-                meningkatkan soft skill dan hard skill Anda.
+                {t('features.routineEventsDesc')}
               </p>
             </Card>
             <Card className="p-6" data-aos="fade-up" data-aos-delay="100">
               <Users className="h-12 w-12 mb-4 text-primary" />
-              <h3 className="text-xl font-semibold mb-2">Komunitas Aktif</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                {t('features.activeCommunityTitle')}
+              </h3>
               <p className="text-muted-foreground">
-                Bergabung dengan ratusan developer aktif di Lampung untuk
-                networking dan kolaborasi.
+                {t('features.activeCommunityDesc')}
               </p>
             </Card>
             <Card className="p-6" data-aos="fade-up" data-aos-delay="200">
               <Lightbulb className="h-12 w-12 mb-4 text-primary" />
               <h3 className="text-xl font-semibold mb-2">
-                Dapatkan Wawasan Berharga
+                {t('features.valuableInsightsTitle')}
               </h3>
               <p className="text-muted-foreground">
-                Pelajari langsung hard skill dan soft skill dari para
-                profesional yang aktif di industri melalui sesi networking
-                disemua event.
+                {t('features.valuableInsightsDesc')}
               </p>
             </Card>
           </div>
@@ -146,10 +149,10 @@ export function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 md:mb-12" data-aos="fade-up">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Acara Mendatang
+              {t('upcomingEvents.title')}
             </h2>
             <p className="text-muted-foreground">
-              Jangan lewatkan acara-acara menarik dari komunitas kami
+              {t('upcomingEvents.subtitle')}
             </p>
           </div>
           {upcomingEvents.length > 0 ? (
@@ -176,7 +179,7 @@ export function HomePage() {
                         {event.date} • {event.location}
                       </p>
                       <Button variant="default" className="w-full">
-                        Daftar Sekarang
+                        {t('upcomingEvents.registerNow')}
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>
@@ -191,15 +194,14 @@ export function HomePage() {
             >
               <Calendar className="h-16 md:h-24 w-16 md:w-24 text-muted-foreground mb-6" />
               <h3 className="text-xl md:text-2xl font-semibold mb-2">
-                Belum Ada Acara Selanjutnya
+                {t('upcomingEvents.noEventsTitle')}
               </h3>
               <p className="text-muted-foreground text-center max-w-md mb-6 px-4">
-                Kami sedang menyiapkan acara-acara menarik untuk Anda. Pantau
-                terus halaman ini untuk informasi terbaru.
+                {t('upcomingEvents.noEventsDesc')}
               </p>
               <Button variant="outline" asChild>
                 <Link href="/events">
-                  Lihat Semua Acara
+                  {t('upcomingEvents.viewAllEvents')}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -213,10 +215,10 @@ export function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 md:mb-12" data-aos="fade-up">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Acara Sebelumnya
+              {t('previousEvents.title')}
             </h2>
             <p className="text-muted-foreground">
-              Lihat kembali acara-acara yang telah kami selenggarakan
+              {t('previousEvents.subtitle')}
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-8 md:mb-12">
@@ -242,7 +244,7 @@ export function HomePage() {
                       {event.date} • {event.location}
                     </p>
                     <Button variant="outline" className="w-full">
-                      Lihat Detail
+                      {t('previousEvents.viewDetail')}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
@@ -253,7 +255,7 @@ export function HomePage() {
           <div className="text-center" data-aos="fade-up">
             <Button size="lg" className="w-full sm:w-auto" asChild>
               <Link href="/events">
-                Lihat Lebih Banyak Acara
+                {t('previousEvents.viewMoreEvents')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -266,10 +268,10 @@ export function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 md:mb-12" data-aos="fade-up">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Apa Kata Mereka
+              {t('testimonials.title')}
             </h2>
             <p className="text-muted-foreground">
-              Testimoni dari anggota komunitas kami
+              {t('testimonials.subtitle')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -311,11 +313,10 @@ export function HomePage() {
           data-aos="fade-up"
         >
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Siap Bergabung?
+            {t('cta.title')}
           </h2>
           <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto px-4">
-            Jadilah bagian dari komunitas developer terbesar di Lampung dan
-            kembangkan karirmu bersama kami.
+            {t('cta.subtitle')}
           </p>
           <Button
             size="lg"
@@ -323,7 +324,7 @@ export function HomePage() {
             className="w-full sm:w-auto"
             asChild
           >
-            <Link href="/login">Bergabung Sekarang</Link>
+            <Link href="/login">{t('cta.button')}</Link>
           </Button>
         </div>
       </section>
