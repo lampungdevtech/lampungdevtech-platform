@@ -3,15 +3,15 @@ import { notFound } from 'next/navigation';
 import { events } from '@/constants/events';
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ locale: string; slug: string }>;
 };
 
 export async function generateMetadata(
   props: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { params } = props;
-  const event = events.find((e) => e.slug === params.slug);
+  const { slug } = await props.params;
+  const event = events.find((e) => e.slug === slug);
 
   if (!event) {
     return {
@@ -57,10 +57,9 @@ import ClientEventPage from './client-page';
 
 export default async function EventDetailPage({
   params,
-}: {
-  params: { slug: string };
-}) {
-  const event = events.find((e) => e.slug === params.slug);
+}: Props) {
+  const { slug } = await params;
+  const event = events.find((e) => e.slug === slug);
 
   if (!event) {
     notFound();
