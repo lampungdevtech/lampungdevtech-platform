@@ -2,10 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   pull_request:
     branches:
       - main
+      - staging
+      - 'feat/**'
       - 'feature/**'
       - 'bugfix/**'
 
@@ -17,7 +19,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 11
 
       - uses: actions/setup-node@v4
         with:
