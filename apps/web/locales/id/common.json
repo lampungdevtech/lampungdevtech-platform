@@ -1,0 +1,116 @@
+{
+  "nav": {
+    "about": "Tentang Kami",
+    "events": "Acara",
+    "members": "Anggota",
+    "login": "Masuk / Daftar",
+    "dashboard": "Dashboard",
+    "settings": "Pengaturan",
+    "logout": "Keluar",
+    "menu": "Menu",
+    "lightMode": "Mode Terang",
+    "darkMode": "Mode Gelap"
+  },
+  "language": {
+    "id": "Bahasa Indonesia",
+    "en": "English",
+    "select": "Pilih Bahasa",
+    "switchLanguage": "Ganti Bahasa"
+  },
+  "home": {
+    "hero": {
+      "title": "LampungDevTech",
+      "subtitle": "Bergabunglah dengan komunitas developer teknologi terbesar di Lampung. Belajar, berbagi, dan berkembang bersama.",
+      "tagline": "#SangBumiRuwaJurai",
+      "joinNow": "Bergabung Sekarang",
+      "learnMore": "Pelajari Lebih Lanjut"
+    },
+    "features": {
+      "routineEventsTitle": "Acara Rutin",
+      "routineEventsDesc": "Casual meetup, Work From Cafe (WFC) dan Tech Meetup rutin untuk meningkatkan soft skill dan hard skill Anda.",
+      "activeCommunityTitle": "Komunitas Aktif",
+      "activeCommunityDesc": "Bergabung dengan ratusan developer aktif di Lampung untuk networking dan kolaborasi.",
+      "valuableInsightsTitle": "Dapatkan Wawasan Berharga",
+      "valuableInsightsDesc": "Pelajari langsung hard skill dan soft skill dari para profesional yang aktif di industri melalui sesi networking disemua event."
+    },
+    "upcomingEvents": {
+      "title": "Acara Mendatang",
+      "subtitle": "Jangan lewatkan acara-acara menarik dari komunitas kami",
+      "registerNow": "Daftar Sekarang",
+      "noEventsTitle": "Belum Ada Acara Selanjutnya",
+      "noEventsDesc": "Kami sedang menyiapkan acara-acara menarik untuk Anda. Pantau terus halaman ini untuk informasi terbaru.",
+      "viewAllEvents": "Lihat Semua Acara"
+    },
+    "previousEvents": {
+      "title": "Acara Sebelumnya",
+      "subtitle": "Lihat kembali acara-acara yang telah kami selenggarakan",
+      "viewDetail": "Lihat Detail",
+      "viewMoreEvents": "Lihat Lebih Banyak Acara"
+    },
+    "testimonials": {
+      "title": "Apa Kata Mereka",
+      "subtitle": "Testimoni dari anggota komunitas kami"
+    },
+    "cta": {
+      "title": "Siap Bergabung?",
+      "subtitle": "Jadilah bagian dari komunitas developer terbesar di Lampung dan kembangkan karirmu bersama kami.",
+      "button": "Bergabung Sekarang"
+    }
+  },
+  "footer": {
+    "description": "Komunitas developer teknologi di Lampung untuk berbagi pengetahuan, pengalaman, dan kesempatan.",
+    "rights": "© 2025 LampungDevTech. All rights reserved.",
+    "community": "Komunitas",
+    "resources": "Sumber Daya",
+    "legal": "Legal",
+    "contact": "Hubungi Kami",
+    "about": "Tentang Kami",
+    "visionMission": "Visi & Misi",
+    "partners": "Mitra Komunitas",
+    "jobs": "Lowongan",
+    "blog": "Blog",
+    "showcase": "Showcase",
+    "resourceLinks": "Resources",
+    "codeOfConduct": "Kode Etik",
+    "privacy": "Privasi",
+    "terms": "Ketentuan",
+    "contactLink": "Kontak",
+    "faq": "FAQ",
+    "sponsor": "Sponsor",
+    "openSourceText": "Situs web lampungdev.tech ini",
+    "openSourceLink": "bersumber terbuka di GitHub"
+  },
+  "about": {
+    "heroTitle": "Tentang LampungDevTech",
+    "heroSubtitle": "Membangun ekosistem teknologi yang kuat di Lampung melalui kolaborasi dan pembelajaran berkelanjutan.",
+    "historyTitle": "Sejarah Kami",
+    "teamTitle": "Tim Kami",
+    "teamSubtitle": "Kenali orang-orang di balik LampungDevTech",
+    "joinTitle": "Bergabung dengan Komunitas",
+    "joinSubtitle": "Ayo jadi bagian dari gerakan membangun ekosistem teknologi yang lebih kuat dan berkelanjutan di Lampung!",
+    "joinButton": "Bergabung Sekarang"
+  },
+  "events": {
+    "title": "Acara Komunitas",
+    "subtitle": "Temukan dan ikuti acara-acara menarik dari komunitas kami",
+    "searchPlaceholder": "Cari acara...",
+    "filterAll": "Semua",
+    "filterUpcoming": "Akan Datang",
+    "filterPast": "Selesai",
+    "statusUpcoming": "Akan Datang",
+    "statusPast": "Selesai",
+    "registerNow": "Daftar Sekarang",
+    "viewDetails": "Lihat Detail",
+    "notFoundTitle": "Tidak Ada Acara Ditemukan",
+    "notFoundDesc": "Tidak ada acara yang sesuai dengan kriteria pencarian Anda.",
+    "resetSearch": "Reset Pencarian"
+  },
+  "common": {
+    "loading": "Memuat...",
+    "back": "Kembali",
+    "notFoundTitle": "Halaman tidak ditemukan",
+    "notFoundDesc": "Maaf, halaman yang Anda cari tidak dapat ditemukan atau telah dipindahkan.",
+    "backToHome": "Kembali ke Beranda",
+    "backToPrevious": "Kembali ke Halaman Sebelumnya"
+  }
+}

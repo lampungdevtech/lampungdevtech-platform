@@ -1,0 +1,116 @@
+{
+  "nav": {
+    "about": "About Us",
+    "events": "Events",
+    "members": "Members",
+    "login": "Sign In / Register",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "logout": "Log out",
+    "menu": "Menu",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  },
+  "language": {
+    "id": "Bahasa Indonesia",
+    "en": "English",
+    "select": "Select Language",
+    "switchLanguage": "Switch Language"
+  },
+  "home": {
+    "hero": {
+      "title": "LampungDevTech",
+      "subtitle": "Join the largest tech developer community in Lampung. Learn, share, and grow together.",
+      "tagline": "#SangBumiRuwaJurai",
+      "joinNow": "Join Now",
+      "learnMore": "Learn More"
+    },
+    "features": {
+      "routineEventsTitle": "Routine Events",
+      "routineEventsDesc": "Regular casual meetups, Work From Cafe (WFC), and Tech Meetups to level up your soft and hard skills.",
+      "activeCommunityTitle": "Active Community",
+      "activeCommunityDesc": "Connect with hundreds of active developers in Lampung for networking and collaboration.",
+      "valuableInsightsTitle": "Gain Valuable Insights",
+      "valuableInsightsDesc": "Learn directly from industry professionals through networking sessions across all events."
+    },
+    "upcomingEvents": {
+      "title": "Upcoming Events",
+      "subtitle": "Don't miss out on exciting events from our community",
+      "registerNow": "Register Now",
+      "noEventsTitle": "No Upcoming Events Yet",
+      "noEventsDesc": "We are preparing exciting events for you. Stay tuned to this page for the latest updates.",
+      "viewAllEvents": "View All Events"
+    },
+    "previousEvents": {
+      "title": "Previous Events",
+      "subtitle": "Look back at the events we have organized",
+      "viewDetail": "View Details",
+      "viewMoreEvents": "View More Events"
+    },
+    "testimonials": {
+      "title": "What They Say",
+      "subtitle": "Testimonials from our community members"
+    },
+    "cta": {
+      "title": "Ready to Join?",
+      "subtitle": "Become part of the largest developer community in Lampung and grow your career with us.",
+      "button": "Join Now"
+    }
+  },
+  "footer": {
+    "description": "Tech developer community in Lampung to share knowledge, experience, and opportunities.",
+    "rights": "© 2025 LampungDevTech. All rights reserved.",
+    "community": "Community",
+    "resources": "Resources",
+    "legal": "Legal",
+    "contact": "Contact Us",
+    "about": "About Us",
+    "visionMission": "Vision & Mission",
+    "partners": "Community Partners",
+    "jobs": "Jobs",
+    "blog": "Blog",
+    "showcase": "Showcase",
+    "resourceLinks": "Resources",
+    "codeOfConduct": "Code of Conduct",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contactLink": "Contact",
+    "faq": "FAQ",
+    "sponsor": "Sponsor",
+    "openSourceText": "This lampungdev.tech website is",
+    "openSourceLink": "open source on GitHub"
+  },
+  "about": {
+    "heroTitle": "About LampungDevTech",
+    "heroSubtitle": "Building a strong tech ecosystem in Lampung through collaboration and continuous learning.",
+    "historyTitle": "Our History",
+    "teamTitle": "Our Team",
+    "teamSubtitle": "Meet the people behind LampungDevTech",
+    "joinTitle": "Join the Community",
+    "joinSubtitle": "Be part of the movement building a stronger and sustainable tech ecosystem in Lampung!",
+    "joinButton": "Join Now"
+  },
+  "events": {
+    "title": "Community Events",
+    "subtitle": "Discover and participate in exciting events from our community",
+    "searchPlaceholder": "Search events...",
+    "filterAll": "All",
+    "filterUpcoming": "Upcoming",
+    "filterPast": "Past",
+    "statusUpcoming": "Upcoming",
+    "statusPast": "Past",
+    "registerNow": "Register Now",
+    "viewDetails": "View Details",
+    "notFoundTitle": "No Events Found",
+    "notFoundDesc": "No events matched your search criteria.",
+    "resetSearch": "Reset Search"
+  },
+  "common": {
+    "loading": "Loading...",
+    "back": "Back",
+    "notFoundTitle": "Page not found",
+    "notFoundDesc": "Sorry, the page you are looking for could not be found or has been moved.",
+    "backToHome": "Back to Home",
+    "backToPrevious": "Back to Previous Page"
+  }
+}
