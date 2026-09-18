@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # 1. Relational Database untuk Orders, Shift Ledger, Branches & CapEx
+  postgres:
+    image: postgres:16-alpine
+    container_name: pos_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: pos_user
+      POSTGRES_PASSWORD: pos_password
+      POSTGRES_DB: pos_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  # 2. Document Database untuk Event Management & Menu Catalogs
+  mongodb:
+    image: mongo:7.0
+    container_name: pos_mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo_user
+      MONGO_INITDB_ROOT_PASSWORD: mongo_password
+      MONGO_INITDB_DATABASE: lampungdevtech
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
+
+  # 3. Redis untuk Hot Caching, Table Locks, dan Idempotency Dedup
+  redis:
+    image: redis:7-alpine
+    container_name: pos_redis
+    restart: always
+    command: redis-server --appendonly yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+  # 4. RabbitMQ untuk Asynchronous Event Bus & Notifications
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: pos_rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - '5672:5672'   # AMQP protocol
+      - '15672:15672' # Management Web Dashboard
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  # 5. OpenTelemetry / Jaeger Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: pos_jaeger
+    ports:
+      - '16686:16686' # Web UI
+      - '4318:4318'   # OTLP HTTP receiver
+
+  # 6. Prometheus Metrics Server
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: pos_prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  redis_data:
+  rabbitmq_data:

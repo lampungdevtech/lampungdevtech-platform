@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pos-gateway-ingress
+  namespace: lampungdev-pos
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+spec:
+  tls:
+  - hosts:
+    - api-pos.lampungdevtech.com
+    secretName: pos-api-tls
+  rules:
+  - host: api-pos.lampungdevtech.com
+    http:
+      paths:
+      - path: /api/v1/auth
+        pathType: Prefix
+        backend:
+          service:
+            name: auth-service
+            port:
+              number: 8080
+      - path: /api/v1/orders
+        pathType: Prefix
+        backend:
+          service:
+            name: pos-order-service
+            port:
+              number: 8080
+      - path: /api/v1/catalog
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-service
+            port:
+              number: 8080
+      - path: /api/v1/inventory
+        pathType: Prefix
+        backend:
+          service:
+            name: inventory-service
+            port:
+              number: 8080
+      - path: /api/v1/finance
+        pathType: Prefix
+        backend:
+          service:
+            name: finance-service
+            port:
+              number: 8080

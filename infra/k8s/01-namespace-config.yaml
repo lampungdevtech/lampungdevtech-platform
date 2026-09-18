@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lampungdev-pos
+  labels:
+    environment: production
+    project: lampungdevtech-pos
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pos-common-config
+  namespace: lampungdev-pos
+data:
+  APP_ENV: "production"
+  PORT: "8080"
+  GRPC_PORT: "50051"
+  REDIS_ADDR: "pos-redis.lampungdev-pos.svc.cluster.local:6379"
+  RABBITMQ_URL: "amqp://guest:guest@pos-rabbitmq.lampungdev-pos.svc.cluster.local:5672/"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://pos-jaeger.lampungdev-pos.svc.cluster.local:4318"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pos-secrets
+  namespace: lampungdev-pos
+type: Opaque
+stringData:
+  DATABASE_URL: "postgres://pos_user:pos_password@pos-postgres.lampungdev-pos.svc.cluster.local:5432/pos_db?sslmode=disable"
+  MONGODB_URI: "mongodb://mongo_user:mongo_password@pos-mongodb.lampungdev-pos.svc.cluster.local:27017/lampungdevtech?authSource=admin"
+  JWT_SECRET: "lampungdevtech-pos-super-secret-key-2026"
