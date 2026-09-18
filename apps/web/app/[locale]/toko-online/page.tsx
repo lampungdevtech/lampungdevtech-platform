@@ -147,7 +147,7 @@ export default function TokoOnlineLandingPage() {
           </div>
         </section>
 
-        {/* 3. 4 Fitur Kunci Jualan Online (Winme Style) */}
+        {/* 3. 4 Fitur Kunci Jualan Online */}
         <section className="space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <h2 className="text-3xl font-extrabold tracking-tight">

@@ -60,7 +60,7 @@ export default async function PublicStorefrontPage({
 
   return (
     <div className="min-h-screen pb-16 bg-muted/10">
-      {/* 1. Header Banner & Profil Toko (Winme Style) */}
+      {/* 1. Header Banner & Profil Toko */}
       <div className="relative">
         <div className="h-44 sm:h-56 md:h-64 w-full bg-gradient-to-r from-primary/30 via-emerald-500/20 to-teal-500/30 overflow-hidden relative">
           {store.bannerUrl && (

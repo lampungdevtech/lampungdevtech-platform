@@ -34,12 +34,12 @@ LampungDevTech was conceived not merely as a community directory, but as an inte
   - A desktop-optimized Business Owner Portal for tracking CapEx, calculating BEP, managing multiple branches, configuring recipes (BOM), and auditing staff performance.
   - A **React Native Expo Offline-First** tablet/mobile POS app running local SQLite and ULID generators that operates seamlessly without internet, complete with Bluetooth thermal printer (ESC/POS) integration and automated Kitchen Display System (KDS) alerts.
 
-### 3. Financial Independence for Creators & Social Media Sellers (Winme.id Style Partner Storefronts)
+### 3. Financial Independence for Creators & Social Media Sellers (Partner Online Storefronts)
 - **Problem**:
   - **Predatory Marketplace Commissions (10% - 20%)**: Online sellers and local creators who generate their own traffic via social media (Instagram bio, TikTok, WhatsApp) see their margins decimated by conventional e-commerce platform fees.
   - **Price Wars & Customer Disconnection**: Marketplaces place products alongside cutthroat competitors and conceal buyer WhatsApp contacts, crippling repeat orders and relationship building.
   - **Digital Product Delivery Barriers**: Traditional marketplaces require physical shipment waybills (resi), making it cumbersome to sell Canva templates, e-books, fonts, source code, or design presets.
-- **Solution**: LampungDevTech introduces the **Partner Online Storefront Ecosystem (Social Commerce inspired by Winme.id)**:
+- **Solution**: LampungDevTech introduces the **Partner Online Storefront Ecosystem (Social Commerce)**:
   - **0% Marketplace Take Rate**: 100% of sales revenue goes directly to the partner seller.
   - **Sub-Second Instant Storefronts**: Mobile-first link-in-bio storefronts (`lampungdev.tech/store/:slug`) built with Next.js 15 Server Components, primed for Meta Ads and TikTok Ads conversion.
   - **Automated Digital Product Fulfillment**: Instant delivery of Canva template duplication links, Google Drive/Notion access, or downloadable PDF files immediately upon payment confirmation without requiring shipping waybills.
@@ -106,7 +106,7 @@ sequenceDiagram
     User->>Web: Monitor Real-Time Revenue, Z-Reports, & Staff Efficiency
 ```
 
-### 2. Online Storefront & Digital Product Workflow (Winme.id Style)
+### 2. Online Storefront & Digital Product Workflow
 
 ```mermaid
 sequenceDiagram
@@ -168,7 +168,7 @@ sequenceDiagram
 - **Background Sync Queue**: Automated transaction ingestion upon reconnecting with idempotent API protection.
 - **Bluetooth ESC/POS Thermal Printing**: Instant printing of customer receipts and kitchen tickets.
 
-### 4. Partner Online Storefronts & Social Commerce (Winme.id Style)
+### 4. Partner Online Storefronts & Social Commerce
 - **0% Platform Take Rate**: Partner sellers retain 100% of their sales revenue with zero platform commission deductions.
 - **Sub-Second Mobile Storefronts (Link in Bio)**: Responsive storefronts (`/store/[storeSlug]`) rendered via Next.js 15 Server Components, optimized for high conversion from Meta Ads, TikTok Ads, and Instagram bios.
 - **Automated Digital Product Fulfillment**: Instant access delivery for Canva template links, Google Drive/Notion folders, or PDF downloads immediately upon payment confirmation without physical waybills.
@@ -237,7 +237,7 @@ lampungdevtech-platform/
 │   │   │   │   │   ├── register/           # POS partner registration form
 │   │   │   │   │   └── dashboard/          # Cafe Owner Business Portal (BEP, CapEx, Staff)
 │   │   │   │   ├── toko-online/            # Landing page & embedded partner registration
-│   │   │   │   ├── store/[storeSlug]/       # Partner storefront (Winme.id style)
+│   │   │   │   ├── store/[storeSlug]/       # Partner storefront & digital checkout
 │   │   │   │   │   ├── [productSlug]/      # Product detail & single-step checkout
 │   │   │   │   │   └── order/[orderId]/    # Order status & digital fulfillment
 │   │   │   │   ├── dashboard/mitra-store/  # Partner seller dashboard (products & orders)
@@ -264,7 +264,7 @@ lampungdevtech-platform/
 │   ├── 03-pos-backend-hexagonal-microservices.md # GoFiber Hexagonal Backend Architecture
 │   ├── 04-pos-mobile-offline-first.md      # SQLite, ULID, & ESC/POS Mobile POS Specifications
 │   ├── 05-pos-devops-infrastructure-cicd.md# Kubernetes (K8s) & Docker Deployment Guide
-│   └── 06-mitra-store-winme-social-commerce.md # Partner Storefronts & Digital Products Guide
+│   └── 06-mitra-store-digital-products.md  # Partner Storefronts & Digital Products Guide
 ├── pnpm-workspace.yaml                     # pnpm workspace configuration
 ├── nx.json                                 # Nx task runner configuration
 └── package.json                            # Monorepo root dependencies
@@ -323,7 +323,7 @@ Open your browser and navigate to the following endpoints:
 - **Kitchen Display System (KDS Kitchen & Bar)**: `http://localhost:3000/id/pos/kds`
 - **Partner Storefront Landing Page & Registration**: `http://localhost:3000/id/toko-online`
 - **Partner Seller Dashboard**: `http://localhost:3000/id/dashboard/mitra-store`
-- **Partner Demo Storefront (Winme Style)**: `http://localhost:3000/id/store/lampung-digital`
+- **Partner Demo Storefront (Link-in-Bio)**: `http://localhost:3000/id/store/lampung-digital`
 - **Digital Product & Fast Checkout Demo**: `http://localhost:3000/id/store/lampung-digital/bundle-canva-umkm-lampung`
 
 ### 5. Launch Local Infrastructure (Docker Compose)
@@ -382,7 +382,7 @@ Comprehensive architecture specifications and step-by-step implementation guides
 - `docs/03-pos-backend-hexagonal-microservices.md` — GoFiber Hexagonal Microservices & RabbitMQ Event Bus
 - `docs/04-pos-mobile-offline-first.md` — Offline SQLite Sync Engine, ULID, & Bluetooth ESC/POS
 - `docs/05-pos-devops-infrastructure-cicd.md` — Kubernetes (K8s), Docker Compose, & Observability Specifications
-- `docs/06-mitra-store-winme-social-commerce.md` — Partner Storefronts, Digital Products, & WhatsApp Checkout
+- `docs/06-mitra-store-digital-products.md` — Partner Storefronts, Digital Products, & WhatsApp Checkout
 - `docs/walkthrough-event.md` — Comprehensive implementation walkthrough
 
 ---
@@ -400,7 +400,7 @@ We warmly welcome community contributions! Please follow our workflow to keep de
 ### Commit Message Standards (Conventional Commits)
 Use Commitizen / Conventional Commits format:
 ```bash
-feat(store): implement winme-style storefront and digital product delivery
+feat(store): implement partner storefront and digital product delivery
 fix(events): resolve atomic capacity decrement issue
 docs(readme): translate documentation to english and add store ecosystem
 test(web): add unit tests for language switcher
