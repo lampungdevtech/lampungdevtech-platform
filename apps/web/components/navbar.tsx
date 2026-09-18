@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Moon, Sun, Menu, X, User, Settings, LogOut, Calendar } from 'lucide-react';
+import { Moon, Sun, Menu, X, User, Settings, LogOut, Calendar, Store } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
@@ -33,6 +33,7 @@ const Navbar = () => {
     { name: t('about'), href: '/about' },
     { name: t('events'), href: '/events' },
     { name: t('pos'), href: '/pos' },
+    { name: t('tokoOnline'), href: '/toko-online' },
     { name: t('members'), href: '/members' },
   ];
 
@@ -128,6 +129,12 @@ const Navbar = () => {
                       <Link href="/dashboard/settings">
                         <Settings className="mr-2 h-4 w-4" />
                         {t('settings')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/mitra-store">
+                        <Store className="mr-2 h-4 w-4" />
+                        {t('tokoOnline')} Mitra
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
