@@ -2,8 +2,8 @@
 
 <div align="center">
   <img src="apps/web/public/lampungdevtech-logo.svg" alt="LampungDevTech Logo" width="80" height="80" />
-  <h3>Platform Komunitas Developer & Ekosistem Solusi Bisnis Digital Lampung</h3>
-  <p>Wadah kolaborasi talenta teknologi serta pemberdayaan pebisnis lokal melalui solusi digital berstandar enterprise.</p>
+  <h3>Developer Community Platform & Digital Business Ecosystem of Lampung</h3>
+  <p>A collaborative hub for tech talent and local business empowerment through enterprise-grade digital solutions.</p>
 
   <p>
     <a href="https://github.com/lampungdevtech/lampungdevtech-platform/actions"><img src="https://img.shields.io/badge/CI-Passing-success?style=flat-square" alt="CI Status" /></a>
@@ -16,35 +16,49 @@
 
 ---
 
-## 🎯 Motivasi Project & Masalah yang Diselesaikan (Problem Statement)
+## 🎯 Project Motivation & Problem Statement
 
-LampungDevTech lahir bukan hanya sebagai direktori website biasa, melainkan sebagai ekosistem terpadu untuk memecahkan dua masalah nyata di Provinsi Lampung:
+LampungDevTech was conceived not merely as a community directory, but as an integrated ecosystem built to solve three tangible challenges in Lampung Province:
 
-### 1. Kesenjangan Ekosistem Talenta & Komunitas Teknologi
-- **Problem**: Informasi kegiatan teknologi (meetup, workshop, sertifikasi) sering tersebar dan tidak terarsip dengan baik, menyulitkan developer dan mahasiswa di Lampung untuk berjejaring dan meningkatkan keterampilan digital.
-- **Solusi**: Fitur **Event Management terintegrasi berbasis MongoDB** dengan manajemen kapasitas otomatis, antrean *waiting list* atomik, dan sistem absensi berbasis QR Code.
+### 1. Fragmentation in the Tech Talent & Community Ecosystem
+- **Problem**: Tech community activities (meetups, workshops, certifications) are often scattered and poorly archived, hindering developers and students in Lampung from networking and advancing their digital skills.
+- **Solution**: An integrated **MongoDB-powered Event Management system** featuring automated capacity controls, atomic waiting-list queues, and QR code-based check-in attendance.
 
-### 2. Tantangan Keberlanjutan Pebisnis Kafe & F&B Pemula (Early-Stage Entrepreneurs)
+### 2. Operational Sustainability for Early-Stage Cafe & F&B Entrepreneurs
 - **Problem**:
-  - **Kegagalan Manajemen Modal Awal (CapEx vs OpEx)**: Sebagian besar pengusaha kafe pemula tidak melacak pengeluaran investasi awal (sewa ruko, mesin espresso, renovasi bar) sehingga tidak mengetahui titik impas (Break-Even Point / BEP) dan laba bersih yang sesungguhnya.
-  - **Kebocoran Bahan Baku & Resep HPP**: Ketiadaan pencatatan resep bahan baku (*Bill of Materials*) mengakibatkan stok susu, sirup, dan biji kopi bocor tanpa kontrol margin keuntungan.
-  - **Kerentanan Jaringan Internet (Offline Vulnerability)**: Sistem kasir berbasis cloud murni sering macet ketika koneksi internet terputus saat jam sibuk (*rush hours*), menyebabkan antrean panjang dan kerugian penjualan.
-  - **Blind Spot Ekspansi Multi-Cabang**: Ketika membuka cabang kedua dan ketiga, pemilik bisnis kesulitan mengawasi performa karyawan, kas harian, dan ketersediaan menu secara terpusat.
-- **Solusi**: LampungDevTech menghadirkan **Ekosistem Cafe POS Multi-Cabang**:
-  - Portal Pemilik Bisnis berbasis web untuk pelacakan modal awal (CapEx), kalkulator BEP, manajemen multi-cabang, resep HPP, dan analitik kinerja staf.
-  - Aplikasi kasir tablet/HP berbasis **React Native Expo Offline-First** dengan SQLite dan generator ULID yang tetap beroperasi lancar tanpa internet, lengkap dengan integrasi printer thermal Bluetooth (ESC/POS) dan notifikasi dapur otomatis (*Kitchen Display System*).
+  - **Mismanagement of Initial Capital (CapEx vs. OpEx)**: Most novice cafe owners fail to track upfront capital investments (rent, espresso machines, bar fit-outs), blinding them to their true Break-Even Point (BEP) and net profit margins.
+  - **Raw Material Leakage & BOM Inaccuracy**: The absence of precise Bill of Materials (BOM) tracking leads to unchecked waste and theft of milk, syrups, and coffee beans, eroding margins.
+  - **Offline Vulnerability**: Pure-cloud POS systems fail when internet connections drop during peak hours, causing long queues and lost revenue.
+  - **Multi-Branch Blind Spots**: Expanding to a second or third branch makes centralized staff oversight, cash shift reconciliation, and real-time menu management difficult.
+- **Solution**: LampungDevTech delivers an **Offline-First Multi-Branch Cafe POS Ecosystem**:
+  - A desktop-optimized Business Owner Portal for tracking CapEx, calculating BEP, managing multiple branches, configuring recipes (BOM), and auditing staff performance.
+  - A **React Native Expo Offline-First** tablet/mobile POS app running local SQLite and ULID generators that operates seamlessly without internet, complete with Bluetooth thermal printer (ESC/POS) integration and automated Kitchen Display System (KDS) alerts.
+
+### 3. Financial Independence for Creators & Social Media Sellers (Winme.id Style Partner Storefronts)
+- **Problem**:
+  - **Predatory Marketplace Commissions (10% - 20%)**: Online sellers and local creators who generate their own traffic via social media (Instagram bio, TikTok, WhatsApp) see their margins decimated by conventional e-commerce platform fees.
+  - **Price Wars & Customer Disconnection**: Marketplaces place products alongside cutthroat competitors and conceal buyer WhatsApp contacts, crippling repeat orders and relationship building.
+  - **Digital Product Delivery Barriers**: Traditional marketplaces require physical shipment waybills (resi), making it cumbersome to sell Canva templates, e-books, fonts, source code, or design presets.
+- **Solution**: LampungDevTech introduces the **Partner Online Storefront Ecosystem (Social Commerce inspired by Winme.id)**:
+  - **0% Marketplace Take Rate**: 100% of sales revenue goes directly to the partner seller.
+  - **Sub-Second Instant Storefronts**: Mobile-first link-in-bio storefronts (`lampungdev.tech/store/:slug`) built with Next.js 15 Server Components, primed for Meta Ads and TikTok Ads conversion.
+  - **Automated Digital Product Fulfillment**: Instant delivery of Canva template duplication links, Google Drive/Notion access, or downloadable PDF files immediately upon payment confirmation without requiring shipping waybills.
+  - **Dual Checkout Modes**: Rapid checkout via formatted WhatsApp direct messaging or automated QRIS dynamic payments.
+  - **Instant Partner Onboarding**: A 2-minute registration form embedded directly on the `/toko-online` landing page with real-time slug availability checks.
 
 ---
 
-## 🔄 Alur Bisnis Menyeluruh (Business & User Workflow)
+## 🔄 End-to-End Business & User Workflows
+
+### 1. Cafe POS & Business Operations Workflow
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Calon Mitra (Owner)
+    actor User as Business Partner (Owner)
     actor Admin as Super Admin
-    actor Cashier as Staf / Kasir
-    actor Kitchen as Barista / Dapur
+    actor Cashier as Staff / Cashier
+    actor Kitchen as Barista / Kitchen
     participant Web as Web Platform
     participant Backend as Go Hexagonal Backend
     participant Rabbit as RabbitMQ Broker
@@ -52,69 +66,121 @@ sequenceDiagram
     participant Printer as Bluetooth Printer
 
     %% 1. Onboarding
-    Note over User,Web: 1. Onboarding Mitra Bisnis
-    User->>Web: Login via Google OAuth (Otomatis Role: MEMBER)
-    User->>Web: Kunjungi /pos & Isi Form Pendaftaran Mitra Bisnis
-    Web->>Backend: Simpan Pengajuan (Status: PENDING_APPROVAL)
+    Note over User,Web: 1. Business Partner Onboarding
+    User->>Web: Sign in via Google OAuth (Default Role: MEMBER)
+    User->>Web: Visit /pos & Complete Partner Application
+    Web->>Backend: Persist Application (Status: PENDING_APPROVAL)
 
     %% 2. Approval
-    Note over Admin,Web: 2. Verifikasi Super Admin
-    Admin->>Web: Login Google OAuth (Role: SUPER_ADMIN)
-    Admin->>Web: Review & Setujui Pengajuan di /admin/mitra
-    Web->>Backend: Update Role User -> MITRA_POS
+    Note over Admin,Web: 2. Super Admin Verification
+    Admin->>Web: Sign in via Google OAuth (Role: SUPER_ADMIN)
+    Admin->>Web: Review & Approve Application at /admin/mitra
+    Web->>Backend: Elevate Role -> MITRA_POS
 
     %% 3. Setup Owner
-    Note over User,Web: 3. Setup Portal Bisnis oleh Owner
-    User->>Web: Akses Owner Business Portal (Desktop Only)
-    User->>Web: Input Modal Investasi Awal (CapEx & Kas Float)
-    User->>Web: Buat Multi-Cabang & Tentukan Cabang Utama
-    User->>Web: Tambah Karyawan & Generate Kode Unik / PIN 6-Digit
+    Note over User,Web: 3. Business Portal Setup by Owner
+    User->>Web: Access Owner Business Portal (Desktop Only)
+    User->>Web: Input Initial Capital (CapEx & Cash Float)
+    User->>Web: Create Multiple Branches & Assign Primary Branch
+    User->>Web: Add Employees & Generate Unique 6-Digit PINs
 
-    %% 4. Operasional Kasir
-    Note over Cashier,Mobile: 4. Operasional Kasir di Tablet / HP
-    Cashier->>Mobile: Buka App POS -> Input Email + PIN Kasir
-    Mobile->>Backend: Verifikasi Cepat PIN Staf
-    Mobile->>Cashier: Modal Wajib: "Input Kas Modal Awal (Cash Float)"
-    Cashier->>Mobile: Masukkan Nominal Kas Awal -> Masuk Layar POS
-    Cashier->>Mobile: Proses Pesanan Pelanggan (Bisa 100% Offline via SQLite)
+    %% 4. Cashier Operations
+    Note over Cashier,Mobile: 4. Cashier Shift Operations on Tablet/Mobile
+    Cashier->>Mobile: Launch POS App -> Enter Staff Email + PIN
+    Mobile->>Backend: Verify Staff PIN
+    Mobile->>Cashier: Prompt: "Input Opening Cash Float"
+    Cashier->>Mobile: Enter Float Amount -> Enter POS Register
+    Cashier->>Mobile: Process Customer Orders (100% Offline via SQLite)
 
-    %% 5. Dapur & Struk
-    Note over Cashier,Kitchen: 5. Transaksi & Kitchen Alert
-    Mobile->>Printer: Cetak Struk Pelanggan (Bluetooth ESC/POS)
-    Mobile->>Backend: Sync Order (atau Antre di Sync Queue jika offline)
-    Backend->>Rabbit: Publish event 'order.created'
-    Rabbit->>Kitchen: Notifikasi Layar Dapur (KDS) & Auto-Print Tiket Pesanan
+    %% 5. Kitchen & Receipt
+    Note over Cashier,Kitchen: 5. Transactions & Kitchen Alerts
+    Mobile->>Printer: Print Customer Receipt (Bluetooth ESC/POS)
+    Mobile->>Backend: Sync Order (or Queue if Offline)
+    Backend->>Rabbit: Publish 'order.created' event
+    Rabbit->>Kitchen: Alert Kitchen Display System (KDS) & Auto-Print Order Slip
 
-    %% 6. Tutup Shift & Laporan
-    Note over Cashier,User: 6. Tutup Shift & Analitik Owner
-    Cashier->>Mobile: Close Shift (Input Uang Kas Fisik Akhir)
-    Mobile->>Backend: Hitung Selisih Kas (Cash Variance)
-    User->>Web: Pantau Omset Real-Time, Laporan Z-Report, & Performa Karyawan
+    %% 6. Shift Close & Reports
+    Note over Cashier,User: 6. Shift Closing & Owner Analytics
+    Cashier->>Mobile: Close Shift (Count & Input Final Cash)
+    Mobile->>Backend: Calculate Cash Variance
+    User->>Web: Monitor Real-Time Revenue, Z-Reports, & Staff Efficiency
+```
+
+### 2. Online Storefront & Digital Product Workflow (Winme.id Style)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Member as Member / Partner Seller
+    actor Buyer as Shopper (from Bio / Ads)
+    participant Web as Web Platform (Next.js 15 SSR)
+    participant DB as MongoDB Native (stores, products, orders)
+    participant WA as WhatsApp Seller / QRIS Gateway
+
+    %% 1. Onboarding
+    Note over Member,Web: 1. Instant Storefront Onboarding
+    Member->>Web: Visit /toko-online & Complete 2-Min Form
+    Web->>DB: Validate Slug Real-Time & Create Store (Status: ACTIVE)
+    Web-->>Member: Storefront Live at /store/:slug
+
+    %% 2. Setup Digital Products
+    Note over Member,Web: 2. Publish Digital Product Catalog
+    Member->>Web: Access /dashboard/mitra-store -> Add Digital Product
+    Member->>Web: Input Name, Price, Promo Price, & Canva/PDF Access Link
+    Web->>DB: Persist Product to store_products Collection
+
+    %% 3. Customer Purchasing
+    Note over Buyer,Web: 3. Shopper Visits Storefront from Bio / Ad Link
+    Buyer->>Web: Open lampungdev.tech/store/:slug (Loads in < 1s)
+    Buyer->>Web: Select Product -> Complete Single-Step Checkout
+
+    alt Option A: WhatsApp Direct Checkout (Social Media Favorite)
+        Buyer->>Web: Click "Order via WhatsApp"
+        Web->>DB: Persist Order (Channel: WHATSAPP_DIRECT)
+        Web-->>Buyer: Redirect to Seller WhatsApp with Formatted Order Summary
+    else Option B: Automated QRIS Payment
+        Buyer->>Web: Click "Pay Automatically (QRIS)"
+        Web-->>Buyer: Display Dynamic QRIS Barcode
+        Buyer->>WA: Complete Payment via Banking App / E-Wallet
+        Buyer->>Web: Confirm Payment
+        Web->>DB: Update Order Status -> PAID
+        Web-->>Buyer: Unlock Canva Template Link / Direct PDF Download Instantly!
+    end
 ```
 
 ---
 
-## 🌟 Fitur Utama (Key Features)
+## 🌟 Key Features
 
-### 1. Platform Komunitas & Event Management
-- **Dukungan Bilingual (i18n)**: Rute ter-lokalisasi `/id` (Default) dan `/en`, persistensi bahasa via cookie, dan komponen Language Switcher interaktif.
-- **Event Management (MongoDB)**: Manajemen event, pencarian teks, filter kategori & status, kuota atomik dengan `$inc`, antrean otomatis *waiting list*, dan QR Code check-in absensi.
+### 1. Community Platform & Event Management
+- **Bilingual Support (i18n)**: Localized routes `/id` (Default) and `/en`, cookie-persisted language preferences, and an interactive Language Switcher component.
+- **MongoDB-Powered Event Engine**: Event listings, full-text search, status and category filtering, atomic ticket capacity with `$inc`, automated waiting lists, and QR code check-in attendance.
 
-### 2. Solusi Cafe POS untuk Pebisnis (Mitra POS)
-- **Kalkulator BEP & ROI Interaktif**: Simulasi waktu balik modal berdasarkan biaya sewa, mesin espresso, HPP, dan target penjualan harian.
-- **Multi-Cabang & Cabang Utama**: Manajemen banyak cabang, pengaturan meja, dan penyesuaian harga khusus cabang.
-- **Resep Bahan Baku (BOM) & HPP Otomatis**: Integrasi menu dengan bahan baku untuk mencegah kebocoran stok dan menghitung margin kotor per produk.
-- **Manajemen Karyawan**: Pendaftaran kasir/barista dan generator kode unik (PIN) 6-digit untuk login cepat tanpa Google OAuth di perangkat kasir bersama.
-- **Analitik Kinerja Karyawan**: Pemantauan jumlah transaksi yang diproses, kontribusi omset per kasir, kecepatan layanan, dan riwayat selisih kas (*cash discrepancy*) saat tutup shift.
+### 2. Cafe POS Business Solutions (POS Partners)
+- **Interactive BEP & ROI Calculator**: Break-even time simulations based on rental overhead, espresso machinery, BOM costs, and daily sales targets.
+- **Multi-Branch Operations**: Multi-store management, table layout configuration, and branch-specific menu pricing.
+- **Bill of Materials (BOM) & Automated Cost of Goods Sold (COGS)**: Recipe-to-inventory mapping to prevent ingredient leakage and calculate gross margins per menu item.
+- **Staff Access & PIN Authentication**: Employee onboarding with unique 6-digit PIN generators for fast shared-device login without Google OAuth.
+- **Staff Performance Analytics**: Tracking transaction volumes, cashier revenue contribution, fulfillment speed, and shift cash discrepancy history.
 
-### 3. Mobile POS Kasir (React Native Expo)
-- **Offline-First Resilience**: Beroperasi lancar tanpa koneksi internet menggunakan **SQLite (`expo-sqlite`)** dan generator **ULID**.
-- **Mesin Sinkronisasi (Sync Queue)**: Mengunggah transaksi otomatis saat internet tersambung kembali dengan proteksi *Idempotency-Key*.
-- **Integrasi Bluetooth Printer (ESC/POS)**: Pencetakan struk kasir dan tiket dapur otomatis.
+### 3. Mobile POS (React Native Expo)
+- **Offline-First Resilience**: Uninterrupted operations without internet connectivity using **SQLite (`expo-sqlite`)** and **ULID** generators.
+- **Background Sync Queue**: Automated transaction ingestion upon reconnecting with idempotent API protection.
+- **Bluetooth ESC/POS Thermal Printing**: Instant printing of customer receipts and kitchen tickets.
+
+### 4. Partner Online Storefronts & Social Commerce (Winme.id Style)
+- **0% Platform Take Rate**: Partner sellers retain 100% of their sales revenue with zero platform commission deductions.
+- **Sub-Second Mobile Storefronts (Link in Bio)**: Responsive storefronts (`/store/[storeSlug]`) rendered via Next.js 15 Server Components, optimized for high conversion from Meta Ads, TikTok Ads, and Instagram bios.
+- **Automated Digital Product Fulfillment**: Instant access delivery for Canva template links, Google Drive/Notion folders, or PDF downloads immediately upon payment confirmation without physical waybills.
+- **Dual Checkout Options**:
+  - *WhatsApp Direct Mode*: Pre-fills seller WhatsApp chats with structured order summaries (buyer details, product, total).
+  - *Automated QRIS Mode*: Seamless QR payment with real-time verification and instant digital asset unlocking.
+- **Instant Embedded Onboarding**: A 2-minute registration form embedded on the `/toko-online` landing page with real-time slug availability checks.
+- **Unified Seller Dashboard**: A dedicated portal at `/dashboard/mitra-store` for tracking revenue, managing digital catalogs, and processing incoming orders.
 
 ---
 
-## 🏗️ Arsitektur Sistem & Technology Stack
+## 🏗️ System Architecture & Technology Stack
 
 ```
                                ┌─────────────────────────────────────────┐
@@ -140,194 +206,214 @@ sequenceDiagram
                                └─────────────┴─────────────┴─────────────┘
                                   │           │             │           │
             ┌─────────────────────┴───┐ ┌─────┴──────────┐ ┌┴───────────┴─────────┐
-            │ PostgreSQL (Transaksional│ │ MongoDB (Event │ │ Redis (Locks & Cache)│
-            │  Ledger, Cabang, Shift) │ │  & Menu Catalog│ │ RabbitMQ (Outbox Bus) │
+            │ PostgreSQL (Transactional│ │ MongoDB (Event │ │ Redis (Locks & Cache)│
+            │  Ledger, Branches, Shift)│ │  & Menu Catalog│ │ RabbitMQ (Outbox Bus) │
             └─────────────────────────┘ └────────────────┘ └───────────────────────┘
 ```
 
-| Layer | Teknologi | Peran / Deskripsi |
+| Layer | Technology | Role / Description |
 | :--- | :--- | :--- |
-| **Frontend Web** | Next.js 15 (App Router), React 19, TypeScript | Platform publik, portal pendaftaran mitra, dan dashboard owner. |
-| **Desain & UI** | Tailwind CSS, Radix UI Primitives, Lucide Icons | Desain responsif, dark/light mode, dan paket internal `@lampung-devtech/shared-ui`. |
-| **Mobile Kasir** | React Native Expo, SQLite (`expo-sqlite`), ULID | Aplikasi kasir tablet/HP offline-first dengan Bluetooth printer. |
-| **Backend Services** | Go 1.23+, GoFiber (`fasthttp`), gRPC Protobuf | Microservices berkecepatan tinggi dengan Hexagonal Architecture. |
-| **Database** | PostgreSQL 16 & MongoDB 7.0 | PostgreSQL untuk ledger/finansial ACID; MongoDB untuk katalog menu & event. |
-| **Cache & Lock** | Redis 7 | Distributed locking meja/order dan caching data performa tinggi. |
-| **Messaging** | RabbitMQ 3.13 (Topic Exchange) | Event bus asinkron (*order.created*, *stock.low_alert*, *shift.closed*). |
-| **Infrastruktur** | Docker Compose & Kubernetes (K3s / Managed K8s) | Docker Compose untuk lokal dev; K8s dengan HPA autoscaler untuk jam sibuk kafe. |
+| **Frontend Web** | Next.js 15 (App Router), React 19, TypeScript | Public platform, partner onboarding portal, storefronts, and owner dashboard. |
+| **Design & UI** | Tailwind CSS, Radix UI Primitives, Lucide Icons | Responsive layouts, dark/light modes, and internal package `@lampung-devtech/shared-ui`. |
+| **Mobile POS** | React Native Expo, SQLite (`expo-sqlite`), ULID | Offline-first tablet/mobile POS cashier application with Bluetooth ESC/POS printing. |
+| **Backend Services** | Go 1.23+, GoFiber (`fasthttp`), gRPC Protobuf | High-throughput microservices using Hexagonal Architecture. |
+| **Database** | PostgreSQL 16 & MongoDB 7.0 | PostgreSQL for ACID financial ledger; MongoDB for menu catalogs, storefronts, & events. |
+| **Cache & Locks** | Redis 7 | Distributed locking for tables/orders and high-performance caching. |
+| **Messaging** | RabbitMQ 3.13 (Topic Exchange) | Asynchronous event bus (*order.created*, *stock.low_alert*, *shift.closed*). |
+| **Infrastructure** | Docker Compose & Kubernetes (K3s / Managed K8s) | Docker Compose for local dev; K8s with HPA autoscalers for peak cafe traffic. |
 
 ---
 
-## 📁 Struktur Repositori (Nx Monorepo)
+## 📁 Repository Structure (Nx Monorepo)
 
 ```
 lampungdevtech-platform/
 ├── apps/
-│   ├── web/                                # Next.js 15 Web Platform & Owner Portal
+│   ├── web/                                # Next.js 15 Web Platform & Partner Portals
 │   │   ├── app/
-│   │   │   ├── [locale]/                   # Rute bilingual (/id, /en)
-│   │   │   │   ├── events/                 # Halaman daftar & detail event
-│   │   │   │   ├── pos/                    # Landing page POS & form pendaftaran mitra
-│   │   │   │   │   ├── register/           # Form pendaftaran mitra POS
-│   │   │   │   │   └── dashboard/          # Owner Business Portal (Multi-cabang, CapEx, Karyawan)
-│   │   │   │   └── admin/mitra/            # Super Admin approval portal
+│   │   │   ├── [locale]/                   # Bilingual routes (/id, /en)
+│   │   │   │   ├── events/                 # Event listings & detail pages
+│   │   │   │   ├── pos/                    # POS landing page & partner registration
+│   │   │   │   │   ├── register/           # POS partner registration form
+│   │   │   │   │   └── dashboard/          # Cafe Owner Business Portal (BEP, CapEx, Staff)
+│   │   │   │   ├── toko-online/            # Landing page & embedded partner registration
+│   │   │   │   ├── store/[storeSlug]/       # Partner storefront (Winme.id style)
+│   │   │   │   │   ├── [productSlug]/      # Product detail & single-step checkout
+│   │   │   │   │   └── order/[orderId]/    # Order status & digital fulfillment
+│   │   │   │   ├── dashboard/mitra-store/  # Partner seller dashboard (products & orders)
+│   │   │   │   └── admin/mitra/            # Super Admin partner approval portal
 │   │   │   └── api/                        # API route handlers
-│   │   ├── components/                     # Komponen UI & Language Switcher
-│   │   ├── i18n/                           # Konfigurasi routing next-intl
-│   │   └── locales/                        # Kamus terjemahan id & en
+│   │   │       ├── events/                 # Event registration & check-in APIs
+│   │   │       ├── pos/                    # POS partner application APIs
+│   │   │       └── store/                  # Online store, slug validator, & checkout APIs
+│   │   ├── components/                     # UI components & Language Switcher
+│   │   │   ├── store/                      # Onboarding forms & storefront components
+│   │   │   └── ...
+│   │   ├── services/                       # Database service layer (MongoDB native)
+│   │   │   ├── event.service.ts
+│   │   │   └── store.service.ts            # Storefront, digital products, & orders service
+│   │   ├── types/                          # TypeScript contracts (Store, StoreProduct, StoreOrder)
+│   │   ├── i18n/                           # next-intl routing configuration
+│   │   └── locales/                        # Translation dictionaries (id & en)
 │   └── web-e2e/                            # End-to-End testing (Cypress)
 ├── packages/
-│   └── shared-ui/                          # Paket komponen UI terpusat (@lampung-devtech/shared-ui)
-├── docs/                                   # Dokumentasi spesifikasi modular per fitur
-│   ├── 01-event-management-mongodb.md      # Spesifikasi Event Management (MongoDB)
-│   ├── 02-pos-business-web-platform.md     # Spesifikasi Owner Portal & Landing POS
-│   ├── 03-pos-backend-hexagonal-microservices.md # Spesifikasi GoFiber Hexagonal Backend
-│   ├── 04-pos-mobile-offline-first.md      # Spesifikasi Mobile POS Expo Offline-First
-│   └── 05-pos-devops-infrastructure-cicd.md# Spesifikasi Kubernetes (K8s) & Docker
-├── pnpm-workspace.yaml                     # Konfigurasi pnpm workspace
-├── nx.json                                 # Konfigurasi task runner Nx
-└── package.json                            # Root dependensi monorepo
+│   └── shared-ui/                          # Shared UI component library (@lampung-devtech/shared-ui)
+├── docs/                                   # Modular technical architecture specifications
+│   ├── 01-event-management-mongodb.md      # Event Management (MongoDB) Specifications
+│   ├── 02-pos-business-web-platform.md     # Owner Portal & POS Landing Specifications
+│   ├── 03-pos-backend-hexagonal-microservices.md # GoFiber Hexagonal Backend Architecture
+│   ├── 04-pos-mobile-offline-first.md      # SQLite, ULID, & ESC/POS Mobile POS Specifications
+│   ├── 05-pos-devops-infrastructure-cicd.md# Kubernetes (K8s) & Docker Deployment Guide
+│   └── 06-mitra-store-winme-social-commerce.md # Partner Storefronts & Digital Products Guide
+├── pnpm-workspace.yaml                     # pnpm workspace configuration
+├── nx.json                                 # Nx task runner configuration
+└── package.json                            # Monorepo root dependencies
 ```
 
 ---
 
-## 🚀 Memulai Pengembangan Lokal (Getting Started)
+## 🚀 Getting Started with Local Development
 
-### Prasyarat Sistem (Prerequisites)
-Pastikan perangkat pengembangan Anda telah terinstal:
-- **Node.js**: Versi **>= 24.x LTS** (wajib seragam dengan CI runner).
-- **pnpm**: Versi **>= 11.x** (package manager monorepo).
-- **Docker & Docker Compose**: (Opsional, untuk menjalankan PostgreSQL, MongoDB, Redis, dan RabbitMQ lokal).
-- **Git**: Versi terbaru.
+### Prerequisites
+Ensure your development workstation has the following installed:
+- **Node.js**: Version **>= 24.x LTS** (strictly matching the CI runner).
+- **pnpm**: Version **>= 11.x** (monorepo package manager).
+- **Docker & Docker Compose**: (Optional, for running PostgreSQL, MongoDB, Redis, and RabbitMQ locally).
+- **Git**: Latest version.
 
-### 1. Kloning Repositori
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/lampungdevtech/lampungdevtech-platform.git
 cd lampungdevtech-platform
 ```
 
-### 2. Instalasi Dependensi Monorepo
-Gunakan `pnpm` untuk menginstal seluruh dependensi workspace:
+### 2. Install Workspace Dependencies
+Use `pnpm` to install all workspace dependencies:
 ```bash
 pnpm install
 ```
 
-### 3. Konfigurasi Environment Variables
-Salin template konfigurasi lingkungan dari berkas `.env.example` ke `.env` dan `apps/web/.env.local`:
+### 3. Configure Environment Variables
+Copy the template configuration files from `.env.example` to `.env` and `apps/web/.env.local`:
 ```bash
 cp .env.example .env
 cp .env.example apps/web/.env.local
 ```
 > [!NOTE]
-> Berkas [`.env.example`](.env.example) telah didokumentasikan lengkap dalam bahasa Inggris dan mencakup konfigurasi untuk Web Platform, MongoDB, PostgreSQL, Redis, RabbitMQ, JWT Secret, serta Google OAuth.
+> The [`.env.example`](.env.example) file is fully documented in English and covers configurations for Web Platform, MongoDB, PostgreSQL, Redis, RabbitMQ, JWT Secrets, and Google OAuth credentials.
 
-### 4. Menjalankan Server Pengembangan Web Platform (Nx Dev)
-Jalankan aplikasi web Next.js 15 menggunakan perintah Nx:
+### 4. Run the Web Development Server (Nx Dev)
+Start the Next.js 15 web application using Nx:
 ```bash
-# Menjalankan aplikasi web
+# Start the web app
 pnpm exec nx dev web
 
-# Atau menggunakan shortcut script
+# Or using shortcut script
 pnpm start:web
 ```
-Buka browser di endpoint berikut:
-- **Beranda & Komunitas**: `http://localhost:3000/` (Otomatis dialihkan ke `/id`)
+Open your browser and navigate to the following endpoints:
+- **Home & Community**: `http://localhost:3000/` (Auto-redirects to `/id` or `/en`)
 - **Event Management**: `http://localhost:3000/id/events`
-- **Scanner Check-in Tiket Hari-H**: `http://localhost:3000/id/events/check-in`
-- **Solusi Bisnis & Edukasi POS**: `http://localhost:3000/id/pos`
-- **Pendaftaran Mitra POS Kafe**: `http://localhost:3000/id/pos/register`
-- **Portal Super Admin Approval Mitra**: `http://localhost:3000/id/admin/mitra`
+- **Ticket Check-In Scanner**: `http://localhost:3000/id/events/check-in`
+- **POS Business & Education**: `http://localhost:3000/id/pos`
+- **Cafe POS Partner Registration**: `http://localhost:3000/id/pos/register`
+- **Super Admin Partner Approval Portal**: `http://localhost:3000/id/admin/mitra`
 - **Owner Business Portal (BEP & CapEx)**: `http://localhost:3000/id/pos/dashboard`
-- **Terminal Kasir POS (Web Tablet Emulator)**: `http://localhost:3000/id/pos/terminal`
-- **Kitchen Display System (KDS Dapur & Bar)**: `http://localhost:3000/id/pos/kds`
+- **Cashier Terminal (Web Tablet Emulator)**: `http://localhost:3000/id/pos/terminal`
+- **Kitchen Display System (KDS Kitchen & Bar)**: `http://localhost:3000/id/pos/kds`
+- **Partner Storefront Landing Page & Registration**: `http://localhost:3000/id/toko-online`
+- **Partner Seller Dashboard**: `http://localhost:3000/id/dashboard/mitra-store`
+- **Partner Demo Storefront (Winme Style)**: `http://localhost:3000/id/store/lampung-digital`
+- **Digital Product & Fast Checkout Demo**: `http://localhost:3000/id/store/lampung-digital/bundle-canva-umkm-lampung`
 
-### 5. Menjalankan Infrastruktur Database Lokal (Docker Compose)
-Untuk menjalankan PostgreSQL 16, MongoDB 7.0, Redis 7, dan RabbitMQ 3.13 di komputer lokal:
+### 5. Launch Local Infrastructure (Docker Compose)
+To spin up PostgreSQL 16, MongoDB 7.0, Redis 7, and RabbitMQ 3.13 locally:
 ```bash
 docker compose up -d
 ```
-Dashboard & koneksi pendukung:
+Service dashboards and connection ports:
 - **RabbitMQ Management**: `http://localhost:15672` (User: `guest`, Pass: `guest`)
 - **MongoDB Native**: `localhost:27017`
 - **PostgreSQL**: `localhost:5432` (Database: `pos_db`)
 - **Redis**: `localhost:6379`
 
-### 6. Menjalankan Backend Microservice GoFiber (Hexagonal)
-Pastikan dependensi Docker atau Go telah terinstal, lalu jalankan service:
+### 6. Run the GoFiber Hexagonal Backend Service
+Ensure Go 1.23+ or Docker is installed, then launch the service:
 ```bash
 cd backend
 go run cmd/server/main.go
-# Atau menggunakan Docker:
+# Or with Docker:
 docker build -t pos-backend .
 docker run -p 8080:8080 pos-backend
 ```
-Service akan aktif di port `8080` (`http://localhost:8080/healthz`).
+The service will be active on port `8080` (`http://localhost:8080/healthz`).
 
-### 7. Menjalankan Mobile POS Kasir (React Native Expo)
-Untuk menguji aplikasi kasir tablet & mobile di simulator Android, iOS, atau browser:
+### 7. Run the Mobile POS (React Native Expo)
+To test the tablet and mobile cashier application on an Android, iOS simulator, or browser:
 ```bash
 cd apps/mobile-pos
 pnpm start
-# Tekan 'w' untuk membuka versi web, atau 'a' untuk Android emulator
+# Press 'w' for web preview, or 'a' for Android emulator
 ```
 
-### 8. Pengujian, Linting & Build
-Gunakan perintah terpadu dari Nx:
+### 8. Testing, Linting & Production Build
+Use unified commands from Nx:
 ```bash
-# Validasi tipe TypeScript di seluruh workspace
+# Validate TypeScript types across workspace
 npx tsc --project apps/web/tsconfig.json --noEmit
 
-# Jalankan linter
+# Run linter
 pnpm exec nx lint web
 
-# Jalankan unit tests
+# Run unit tests
 pnpm exec nx test web
 
-# Build bundle produksi (menghasilkan 59 halaman)
+# Build production bundle (generates 68 pages)
 pnpm exec nx build web
 ```
 
 ---
 
-## 📚 Panduan Teknis & Arsitektur Lokal (`/docs`)
+## 📚 Technical Architecture Documentation (`/docs`)
 
-Dokumentasi spesifikasi teknis dan panduan implementasi langkah demi langkah disimpan secara lokal pada direktori `/docs` (diabaikan oleh git agar tidak mengotori repositori utama):
-- `docs/01-event-management-mongodb.md` — Spesifikasi Event Management, MongoDB Native, & Kuota Atomik
-- `docs/02-pos-business-web-platform.md` — Spesifikasi Owner Portal, BEP Calculator, & Multi-Cabang
-- `docs/03-pos-backend-hexagonal-microservices.md` — Arsitektur Microservices Hexagonal GoFiber & RabbitMQ
-- `docs/04-pos-mobile-offline-first.md` — Mesin Sinkronisasi Offline SQLite, ULID, & Bluetooth ESC/POS
-- `docs/05-pos-devops-infrastructure-cicd.md` — Spesifikasi Kubernetes (K8s), Docker Compose, & Observability
-- `docs/walkthrough-event.md` — Rangkuman implementasi menyeluruh ekosistem platform
+Comprehensive architecture specifications and step-by-step implementation guides are maintained locally in the `/docs` directory (ignored by git to keep the core repository lightweight):
+- `docs/01-event-management-mongodb.md` — Event Management, MongoDB Native, & Atomic Quota Specifications
+- `docs/02-pos-business-web-platform.md` — Owner Portal, BEP Calculator, & Multi-Branch Specifications
+- `docs/03-pos-backend-hexagonal-microservices.md` — GoFiber Hexagonal Microservices & RabbitMQ Event Bus
+- `docs/04-pos-mobile-offline-first.md` — Offline SQLite Sync Engine, ULID, & Bluetooth ESC/POS
+- `docs/05-pos-devops-infrastructure-cicd.md` — Kubernetes (K8s), Docker Compose, & Observability Specifications
+- `docs/06-mitra-store-winme-social-commerce.md` — Partner Storefronts, Digital Products, & WhatsApp Checkout
+- `docs/walkthrough-event.md` — Comprehensive implementation walkthrough
 
 ---
 
-## 🤝 Panduan Kontribusi & Konvensi Git
+## 🤝 Contribution Guidelines & Git Conventions
 
-Kami menyambut kontribusi dari komunitas! Ikuti pedoman berikut agar alur kolaborasi tetap rapi:
+We warmly welcome community contributions! Please follow our workflow to keep development clean and consistent:
 
-### Alur Branching
-- `main`: Branch produksi yang selalu siap rilis.
-- `staging`: Branch integrasi sebelum digabungkan ke `main`.
-- `feat/<nama-fitur>`: Branch untuk penambahan fitur baru (dibuat dari `staging`).
-- `fix/<nama-bug>`: Branch untuk perbaikan bug.
+### Branching Model
+- `main`: Production-ready release branch.
+- `staging`: Integration branch before merging to `main`.
+- `feat/<feature-name>`: Feature branch (branched from `staging`).
+- `fix/<bug-name>`: Bugfix branch.
 
-### Standar Pesan Commit (Conventional Commits)
-Gunakan format Commitizen / Conventional Commits:
+### Commit Message Standards (Conventional Commits)
+Use Commitizen / Conventional Commits format:
 ```bash
-feat(pos): add interactive BEP calculator component
+feat(store): implement winme-style storefront and digital product delivery
 fix(events): resolve atomic capacity decrement issue
-docs(readme): update node version requirement to v24
+docs(readme): translate documentation to english and add store ecosystem
 test(web): add unit tests for language switcher
 ```
 
 ---
 
-## 💬 Komunitas & Diskusi
+## 💬 Community & Discussion
 - **Telegram Group**: [t.me/lampungdevtech](https://t.me/lampungdevtech)
 - **GitHub Discussions**: [github.com/lampungdevtech/lampungdevtech-platform/discussions](https://github.com/lampungdevtech/lampungdevtech-platform/discussions)
-- **Website Resmi**: [lampungdev.tech](https://lampungdev.tech)
+- **Official Website**: [lampungdev.tech](https://lampungdev.tech)
 
 ---
 
-## 📄 Lisensi
-Repositori ini dilisensikan di bawah lisensi terbuka [MIT](LICENSE).
+## 📄 License
+This repository is licensed under the open-source [MIT License](LICENSE).
