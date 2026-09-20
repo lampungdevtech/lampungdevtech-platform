@@ -67,6 +67,7 @@ func main() {
 	staffRepo := repositories.NewPostgresStaffRepo(db)
 	orderRepo := repositories.NewPostgresOrderRepo(db)
 	shiftRepo := repositories.NewPostgresShiftRepo(db)
+	ownerRepo := repositories.NewPostgresOwnerRepo(db)
 
 	lockRepo := caching.NewRedisLockRepo(redisURL)
 	eventPublisher := messaging.NewRabbitMQPublisher(rabbitmqURL, rabbitmqExchange)
@@ -75,6 +76,7 @@ func main() {
 	authService := services.NewAuthService(staffRepo, jwtSecret)
 	orderService := services.NewOrderService(orderRepo, lockRepo, eventPublisher)
 	shiftService := services.NewShiftService(shiftRepo, eventPublisher)
+	ownerService := services.NewOwnerService(ownerRepo)
 
 	// 4. Inisialisasi Driving Adapters (HTTP Handlers & Fiber Web Framework)
 	turnstileSecret := os.Getenv("CLOUDFLARE_TURNSTILE_SECRET_KEY")
@@ -86,6 +88,7 @@ func main() {
 	authHandler := httpInterface.NewAuthHandler(authService, turnstileVerifier)
 	shiftHandler := httpInterface.NewShiftHandler(shiftService)
 	orderHandler := httpInterface.NewOrderHandler(orderService)
+	ownerHandler := httpInterface.NewOwnerHandler(ownerRepo, ownerService)
 
 	app := fiber.New(fiber.Config{
 		AppName:      "LampungDevTech POS Microservice v1.0",
@@ -96,6 +99,7 @@ func main() {
 		AuthHandler:  authHandler,
 		ShiftHandler: shiftHandler,
 		OrderHandler: orderHandler,
+		OwnerHandler: ownerHandler,
 		JWTSecret:    jwtSecret,
 	})
 

@@ -548,6 +548,22 @@ export function usePosOwnerStore() {
     } catch (e) {}
   }, [banks, vault, electricity, materials, purchaseOrders, shifts, promos, customers, assets, sops, parkings]);
 
+  // Initial background fetch from backend API
+  useEffect(() => {
+    fetch('/api/pos/owner/banks')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setBanks((prev) => {
+            const apiBankIds = new Set(json.data.map((b: any) => b.id));
+            const localOnly = prev.filter((b) => !apiBankIds.has(b.id));
+            return [...json.data, ...localOnly];
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Kalkulasi Saldo Total Konsolidasi
   const totalBankBalance = banks.reduce((acc, b) => acc + b.balance, 0);
   const totalPhysicalCash = vault.cashRegister + vault.pettyCash + vault.parkingCash;
@@ -560,14 +576,27 @@ export function usePosOwnerStore() {
       id: `BNK-${Date.now().toString().slice(-4)}`,
     };
     setBanks((prev) => [...prev, newBank]);
+    fetch('/api/pos/owner/banks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newBank),
+    }).catch(() => {});
   };
 
   const updateBank = (id: string, updates: Partial<BankAccount>) => {
     setBanks((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
+    fetch(`/api/pos/owner/banks/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    }).catch(() => {});
   };
 
   const deleteBank = (id: string) => {
     setBanks((prev) => prev.filter((b) => b.id !== id));
+    fetch(`/api/pos/owner/banks/${id}`, {
+      method: 'DELETE',
+    }).catch(() => {});
   };
 
   // --- MUTASI KAS ---
@@ -581,6 +610,11 @@ export function usePosOwnerStore() {
     setBanks((prev) =>
       prev.map((b) => (b.id === targetBankId ? { ...b, balance: b.balance + amount } : b))
     );
+    fetch('/api/pos/owner/finance/withdraw-gateway', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetBankId, amount }),
+    }).catch(() => {});
     return true;
   };
 
@@ -592,6 +626,11 @@ export function usePosOwnerStore() {
       lastRestocked: new Date().toISOString().split('T')[0],
     };
     setMaterials((prev) => [...prev, newMat]);
+    fetch('/api/pos/owner/inventory/materials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newMat),
+    }).catch(() => {});
   };
 
   const updateStock = (id: string, newStock: number) => {
@@ -602,10 +641,18 @@ export function usePosOwnerStore() {
           : m
       )
     );
+    fetch(`/api/pos/owner/inventory/materials/${id}/opname`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ actualStock: newStock }),
+    }).catch(() => {});
   };
 
   const deleteMaterial = (id: string) => {
     setMaterials((prev) => prev.filter((m) => m.id !== id));
+    fetch(`/api/pos/owner/inventory/materials/${id}`, {
+      method: 'DELETE',
+    }).catch(() => {});
   };
 
   const createPurchaseOrder = (materialId: string, quantity: number, supplierName?: string) => {
@@ -624,6 +671,11 @@ export function usePosOwnerStore() {
       status: 'ORDERED',
     };
     setPurchaseOrders((prev) => [po, ...prev]);
+    fetch('/api/pos/owner/inventory/purchase-orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(po),
+    }).catch(() => {});
   };
 
   const updatePOStatus = (id: string, status: PurchaseOrder['status']) => {
@@ -644,6 +696,12 @@ export function usePosOwnerStore() {
       }
       return updated;
     });
+
+    if (status === 'RECEIVED') {
+      fetch(`/api/pos/owner/inventory/purchase-orders/${id}/receive`, {
+        method: 'PUT',
+      }).catch(() => {});
+    }
   };
 
   // --- CRUD STAFF & SHIFTS ---
@@ -653,10 +711,20 @@ export function usePosOwnerStore() {
       id: `SFT-${Date.now().toString().slice(-4)}`,
     };
     setShifts((prev) => [...prev, newShift]);
+    fetch('/api/pos/owner/staff/shifts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newShift),
+    }).catch(() => {});
   };
 
   const updateShift = (id: string, updates: Partial<StaffShift>) => {
     setShifts((prev) => prev.map((s) => (s.id === id ? { ...s, ...updates } : s)));
+    fetch(`/api/pos/owner/staff/shifts/${id}/rotate`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    }).catch(() => {});
   };
 
   // --- CRUD PROMO ---
@@ -667,14 +735,31 @@ export function usePosOwnerStore() {
       usedCount: 0,
     };
     setPromos((prev) => [...prev, newPromo]);
+    fetch('/api/pos/owner/promos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newPromo),
+    }).catch(() => {});
   };
 
   const togglePromo = (id: string) => {
-    setPromos((prev) => prev.map((p) => (p.id === id ? { ...p, isActive: !p.isActive } : p)));
+    setPromos((prev) => {
+      const target = prev.find((p) => p.id === id);
+      const nextActive = target ? !target.isActive : true;
+      fetch(`/api/pos/owner/promos/${id}/toggle`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: nextActive }),
+      }).catch(() => {});
+      return prev.map((p) => (p.id === id ? { ...p, isActive: !p.isActive } : p));
+    });
   };
 
   const deletePromo = (id: string) => {
     setPromos((prev) => prev.filter((p) => p.id !== id));
+    fetch(`/api/pos/owner/promos/${id}`, {
+      method: 'DELETE',
+    }).catch(() => {});
   };
 
   // --- CRUD CUSTOMER / MEMBER ---
@@ -685,6 +770,11 @@ export function usePosOwnerStore() {
       registeredDate: new Date().toISOString().split('T')[0],
     };
     setCustomers((prev) => [newCust, ...prev]);
+    fetch('/api/pos/owner/customers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newCust),
+    }).catch(() => {});
   };
 
   const updateCustomer = (id: string, updates: Partial<CustomerMember>) => {
@@ -702,14 +792,27 @@ export function usePosOwnerStore() {
       id: `AST-${Date.now().toString().slice(-4)}`,
     };
     setAssets((prev) => [...prev, newAsset]);
+    fetch('/api/pos/owner/operations/assets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newAsset),
+    }).catch(() => {});
   };
 
   const updateAssetCondition = (id: string, condition: AssetRecord['condition']) => {
     setAssets((prev) => prev.map((a) => (a.id === id ? { ...a, condition } : a)));
+    fetch(`/api/pos/owner/operations/assets/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ condition }),
+    }).catch(() => {});
   };
 
   const deleteAsset = (id: string) => {
     setAssets((prev) => prev.filter((a) => a.id !== id));
+    fetch(`/api/pos/owner/operations/assets/${id}`, {
+      method: 'DELETE',
+    }).catch(() => {});
   };
 
   // --- CRUD SOP ---
@@ -737,7 +840,7 @@ export function usePosOwnerStore() {
   // --- PARKIR MINGGUAN ---
   const addParkingRecord = (data: Omit<ParkingReport, 'id' | 'storeNet' | 'keeperNet'>) => {
     const storeNet = (data.grossRevenue * data.storeSharePercent) / 100;
-    const keeperNet = (data.grossRevenue * data.keeperSharePercent) / 100;
+    const keeperNet = (data.keeperSharePercent * data.grossRevenue) / 100;
     const newPark: ParkingReport = {
       ...data,
       id: `PRK-W${Date.now().toString().slice(-3)}`,
@@ -745,6 +848,17 @@ export function usePosOwnerStore() {
       keeperNet,
     };
     setParkings((prev) => [newPark, ...prev]);
+    fetch('/api/pos/owner/operations/parking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        periodLabel: data.weekRange,
+        coordinatorName: data.keeperName,
+        grossAmount: data.grossRevenue,
+        motorcycleCount: data.totalVehiclesMotor,
+        carCount: data.totalVehiclesMobil,
+      }),
+    }).catch(() => {});
   };
 
   return {
