@@ -34,6 +34,7 @@ const Navbar = () => {
     { name: t('events'), href: '/events' },
     { name: t('pos'), href: '/pos' },
     { name: t('tokoOnline'), href: '/toko-online' },
+    { name: t('edutech'), href: '/edutech' },
     { name: t('members'), href: '/members' },
   ];
 
