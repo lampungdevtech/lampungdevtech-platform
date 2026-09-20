@@ -290,3 +290,81 @@ CREATE INDEX IF NOT EXISTS idx_promos_code ON promotions(code, is_active);
 CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
 CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_logs(created_at DESC);
 
+-- ==========================================================
+-- MODUL EDTECH CLASS OPERATIONS & SELF-SERVE ENROLLMENT
+-- ==========================================================
+
+-- 19. Tabel Program Bimbel / EdTech Kurikulum
+CREATE TABLE IF NOT EXISTS edutech_programs (
+    id VARCHAR(64) PRIMARY KEY,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'tenant-default',
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    age_group VARCHAR(64) NOT NULL, -- e.g. '7-10 Tahun (SD)', '11-14 Tahun (SMP)'
+    category VARCHAR(64) NOT NULL, -- 'CODING', 'MATH', 'SCIENCE_ROBLOX', 'CREATIVE'
+    thumbnail_url VARCHAR(255),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 20. Tabel Sesi / Batch Kelas (Slot & Kapasitas Kursi)
+CREATE TABLE IF NOT EXISTS edutech_classes (
+    id VARCHAR(64) PRIMARY KEY,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'tenant-default',
+    program_id VARCHAR(64) NOT NULL REFERENCES edutech_programs(id) ON DELETE CASCADE,
+    teacher_id VARCHAR(64) NOT NULL,
+    teacher_name VARCHAR(255) NOT NULL,
+    schedule_time VARCHAR(128) NOT NULL, -- e.g. 'Sabtu & Minggu, 09:00 - 10:30 WIB'
+    max_seats INT NOT NULL DEFAULT 10,
+    booked_seats INT NOT NULL DEFAULT 0,
+    price NUMERIC(15,2) NOT NULL DEFAULT 0,
+    session_link VARCHAR(255),
+    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE', -- 'ACTIVE', 'FULL', 'COMPLETED'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 21. Tabel Pendaftaran Siswa (Enrollment)
+CREATE TABLE IF NOT EXISTS edutech_enrollments (
+    id VARCHAR(64) PRIMARY KEY,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'tenant-default',
+    class_id VARCHAR(64) NOT NULL REFERENCES edutech_classes(id) ON DELETE CASCADE,
+    student_id VARCHAR(64) NOT NULL,
+    student_name VARCHAR(255) NOT NULL,
+    parent_id VARCHAR(64) NOT NULL,
+    parent_name VARCHAR(255) NOT NULL,
+    parent_phone VARCHAR(64) NOT NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'CONFIRMED', -- 'PENDING', 'CONFIRMED', 'CANCELLED'
+    payment_reference VARCHAR(128),
+    enrolled_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 22. Tabel Log Tugas & Pengerjaan Siswa (Homework Logs)
+CREATE TABLE IF NOT EXISTS edutech_homework_logs (
+    id VARCHAR(64) PRIMARY KEY,
+    enrollment_id VARCHAR(64) NOT NULL REFERENCES edutech_enrollments(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    score INT DEFAULT 0,
+    teacher_feedback TEXT,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 23. Tabel Ringkasan Evaluasi Mingguan Buatan AI (AI Weekly Summaries)
+CREATE TABLE IF NOT EXISTS edutech_weekly_summaries (
+    id VARCHAR(64) PRIMARY KEY,
+    student_id VARCHAR(64) NOT NULL,
+    week_number INT NOT NULL,
+    ai_generated_summary TEXT NOT NULL,
+    raw_teacher_notes TEXT,
+    concepts_mastered JSONB NOT NULL DEFAULT '[]'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indeks Kinerja EdTech
+CREATE INDEX IF NOT EXISTS idx_edutech_programs_tenant ON edutech_programs(tenant_id, is_active);
+CREATE INDEX IF NOT EXISTS idx_edutech_classes_prog ON edutech_classes(program_id, status);
+CREATE INDEX IF NOT EXISTS idx_edutech_enrollments_parent ON edutech_enrollments(parent_id, class_id);
+CREATE INDEX IF NOT EXISTS idx_edutech_homework_enroll ON edutech_homework_logs(enrollment_id);
+CREATE INDEX IF NOT EXISTS idx_edutech_summary_student ON edutech_weekly_summaries(student_id, week_number);
+
+
