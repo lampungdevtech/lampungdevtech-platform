@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:web": "npx nx start web"
+    "start:web": "npx nx start web",
+    "db:migrate": "psql \"${DATABASE_URL:-postgres://user@localhost:5432/pos_db?sslmode=disable}\" -f infra/postgres/init.sql",
+    "db:seed": "psql \"${DATABASE_URL:-postgres://user@localhost:5432/pos_db?sslmode=disable}\" -f infra/postgres/seed.sql",
+    "db:reset": "pnpm run db:migrate && pnpm run db:seed"
   },
   "private": true,
   "packageManager": "pnpm@11.18.0",
