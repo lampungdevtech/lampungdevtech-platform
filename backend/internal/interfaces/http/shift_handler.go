@@ -26,15 +26,10 @@ func (h *ShiftHandler) OpenShift(c *fiber.Ctx) error {
 	branchID, _ := c.Locals("branch_id").(string)
 	merchantID, _ := c.Locals("merchant_id").(string)
 
-	if req.StaffID == "" {
-		req.StaffID = staffID
-	}
-	if req.BranchID == "" {
-		req.BranchID = branchID
-	}
-	if req.MerchantID == "" {
-		req.MerchantID = merchantID
-	}
+	// Wajib timpa dari token JWT untuk mencegah pemalsuan identitas tenant
+	req.StaffID = staffID
+	req.BranchID = branchID
+	req.MerchantID = merchantID
 
 	shift, err := h.shiftService.OpenShift(c.Context(), req)
 	if err != nil {
@@ -55,8 +50,17 @@ func (h *ShiftHandler) CloseShift(c *fiber.Ctx) error {
 		return response.BadRequest(c, "Shift ID wajib disertakan", nil)
 	}
 
+	// Injeksi identitas pemanggil dari JWT
+	staffID, _ := c.Locals("staff_id").(string)
+	merchantID, _ := c.Locals("merchant_id").(string)
+	req.StaffID = staffID
+	req.MerchantID = merchantID
+
 	shift, err := h.shiftService.CloseShift(c.Context(), req)
 	if err != nil {
+		if err.Error() == "akses ditolak: sesi shift ini milik merchant/toko lain" || err.Error() == "akses ditolak: sesi shift ini milik staf kasir lain" {
+			return response.Forbidden(c, err.Error())
+		}
 		return response.BadRequest(c, err.Error(), nil)
 	}
 

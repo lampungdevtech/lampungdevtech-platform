@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
+import { NextRequest, NextResponse } from "next/server";
+import { verifyTurnstileClearanceToken } from "@/lib/turnstile-security";
 
 const handler = NextAuth({
   providers: [
@@ -54,4 +56,56 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET!,
 });
 
-export { handler as GET, handler as POST };
+async function isTurnstileVerified(req: NextRequest): Promise<boolean> {
+  if (process.env.NODE_ENV !== "production" && process.env.TURNSTILE_BYPASS_DEV === "true") {
+    return true;
+  }
+
+  const clearanceCookie = req.cookies.get("cf_turnstile_cleared")?.value;
+  if (!clearanceCookie) {
+    return false;
+  }
+
+  const clientIp =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    "";
+
+  return verifyTurnstileClearanceToken(clearanceCookie, clientIp, "login");
+}
+
+export async function POST(req: NextRequest, ctx: any) {
+  const { pathname } = req.nextUrl;
+
+  // Menolak akses langsung via curl / console devtools ke /api/auth/signin/* tanpa Turnstile clearance
+  if (pathname.includes("/signin/")) {
+    const verified = await isTurnstileVerified(req);
+    if (!verified) {
+      return NextResponse.json(
+        {
+          error: "Tantangan Cloudflare Turnstile wajib diselesaikan sebelum melakukan login.",
+          code: "TURNSTILE_CHALLENGE_REQUIRED",
+        },
+        { status: 403 }
+      );
+    }
+  }
+
+  return handler(req, ctx);
+}
+
+export async function GET(req: NextRequest, ctx: any) {
+  const { pathname } = req.nextUrl;
+
+  // Proteksi jika endpoint GET /api/auth/signin/* diakses langsung di browser
+  if (pathname.includes("/signin/")) {
+    const verified = await isTurnstileVerified(req);
+    if (!verified) {
+      const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set("error", "TurnstileRequired");
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  return handler(req, ctx);
+}

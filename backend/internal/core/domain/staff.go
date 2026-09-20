@@ -25,9 +25,10 @@ type Staff struct {
 }
 
 type StaffLoginRequest struct {
-	Email    string `json:"email"`
-	PIN      string `json:"pin"`
-	BranchID string `json:"branch_id"`
+	Email          string `json:"email"`
+	PIN            string `json:"pin"`
+	BranchID       string `json:"branch_id"`
+	TurnstileToken string `json:"turnstile_token"`
 }
 
 type StaffLoginResponse struct {
