@@ -8,11 +8,12 @@ import (
 )
 
 type RouterConfig struct {
-	AuthHandler  *AuthHandler
-	ShiftHandler *ShiftHandler
-	OrderHandler *OrderHandler
-	OwnerHandler *OwnerHandler
-	JWTSecret    string
+	AuthHandler    *AuthHandler
+	ShiftHandler   *ShiftHandler
+	OrderHandler   *OrderHandler
+	OwnerHandler   *OwnerHandler
+	EdutechHandler *EdutechHandler
+	JWTSecret      string
 }
 
 func SetupRouter(app *fiber.App, cfg RouterConfig) {
@@ -103,4 +104,17 @@ func SetupRouter(app *fiber.App, cfg RouterConfig) {
 	protected.Post("/orders/sync", cfg.OrderHandler.SyncBatchOrders)
 	protected.Get("/orders/:id", cfg.OrderHandler.GetOrderByID)
 	protected.Get("/orders", cfg.OrderHandler.GetBranchOrders)
+
+	// EdTech & Bimbel Operations Vertical Module
+	if cfg.EdutechHandler != nil {
+		edu := app.Group("/api/v1/edutech")
+		edu.Get("/programs", cfg.EdutechHandler.GetPrograms)
+		edu.Get("/classes", cfg.EdutechHandler.GetClasses)
+		edu.Post("/enroll", cfg.EdutechHandler.Enroll)
+		edu.Get("/parent/dashboard/:parentId", cfg.EdutechHandler.GetParentDashboard)
+		edu.Post("/teacher/attendance", cfg.EdutechHandler.RecordAttendance)
+		edu.Post("/teacher/homework", cfg.EdutechHandler.SubmitHomework)
+		edu.Post("/ai/summarize", cfg.EdutechHandler.GenerateAISummary)
+		edu.Get("/admin/capacity", cfg.EdutechHandler.GetAdminCapacity)
+	}
 }

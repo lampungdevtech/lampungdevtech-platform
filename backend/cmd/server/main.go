@@ -68,6 +68,7 @@ func main() {
 	orderRepo := repositories.NewPostgresOrderRepo(db)
 	shiftRepo := repositories.NewPostgresShiftRepo(db)
 	ownerRepo := repositories.NewPostgresOwnerRepo(db)
+	edutechRepo := repositories.NewPostgresEdutechRepo(db)
 
 	lockRepo := caching.NewRedisLockRepo(redisURL)
 	eventPublisher := messaging.NewRabbitMQPublisher(rabbitmqURL, rabbitmqExchange)
@@ -77,6 +78,8 @@ func main() {
 	orderService := services.NewOrderService(orderRepo, lockRepo, eventPublisher)
 	shiftService := services.NewShiftService(shiftRepo, eventPublisher)
 	ownerService := services.NewOwnerService(ownerRepo)
+	aiSummarizerSvc := services.NewAISummarizerService(os.Getenv("GEMINI_API_KEY"))
+	edutechService := services.NewEdutechService(edutechRepo, lockRepo, aiSummarizerSvc)
 
 	// 4. Inisialisasi Driving Adapters (HTTP Handlers & Fiber Web Framework)
 	turnstileSecret := os.Getenv("CLOUDFLARE_TURNSTILE_SECRET_KEY")
@@ -89,18 +92,20 @@ func main() {
 	shiftHandler := httpInterface.NewShiftHandler(shiftService)
 	orderHandler := httpInterface.NewOrderHandler(orderService)
 	ownerHandler := httpInterface.NewOwnerHandler(ownerRepo, ownerService)
+	edutechHandler := httpInterface.NewEdutechHandler(edutechService, aiSummarizerSvc)
 
 	app := fiber.New(fiber.Config{
-		AppName:      "LampungDevTech POS Microservice v1.0",
+		AppName:      "LampungDevTech POS & EdTech Microservice v1.0",
 		ServerHeader: "GoFiber/Fasthttp",
 	})
 
 	httpInterface.SetupRouter(app, httpInterface.RouterConfig{
-		AuthHandler:  authHandler,
-		ShiftHandler: shiftHandler,
-		OrderHandler: orderHandler,
-		OwnerHandler: ownerHandler,
-		JWTSecret:    jwtSecret,
+		AuthHandler:    authHandler,
+		ShiftHandler:   shiftHandler,
+		OrderHandler:   orderHandler,
+		OwnerHandler:   ownerHandler,
+		EdutechHandler: edutechHandler,
+		JWTSecret:      jwtSecret,
 	})
 
 	// 5. Start Server dengan Graceful Shutdown
