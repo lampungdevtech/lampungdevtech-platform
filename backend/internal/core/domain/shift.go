@@ -35,5 +35,7 @@ type OpenShiftRequest struct {
 
 type CloseShiftRequest struct {
 	ShiftID       string `json:"shift_id"`
+	StaffID       string `json:"staff_id,omitempty"`
+	MerchantID    string `json:"merchant_id,omitempty"`
 	ActualCashEnd int64  `json:"actual_cash_end"`
 }

@@ -16,6 +16,7 @@ import (
 	"github.com/lampungdevtech/backend/internal/infrastructures/messaging"
 	"github.com/lampungdevtech/backend/internal/infrastructures/repositories"
 	httpInterface "github.com/lampungdevtech/backend/internal/interfaces/http"
+	"github.com/lampungdevtech/backend/pkg/turnstile"
 	_ "github.com/lib/pq"
 )
 
@@ -30,8 +31,15 @@ func main() {
 	port := getEnv("PORT", "8080")
 	dbURL := getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/pos_db?sslmode=disable")
 	redisURL := getEnv("REDIS_URL", "redis://localhost:6379")
-	rabbitmqURL := getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
-	jwtSecret := getEnv("JWT_SECRET", "lampungdevtech-super-secret-pos-jwt-key-2026")
+	appEnv := getEnv("APP_ENV", "development")
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		if appEnv == "production" {
+			log.Fatal("[FATAL SECURITY] Environment variable JWT_SECRET wajib dikonfigurasi pada production!")
+		}
+		jwtSecret = "lampungdevtech-super-secret-pos-jwt-key-2026"
+		log.Println("[WARNING SECURITY] Menjalankan development mode dengan default development JWT_SECRET.")
+	}
 	rabbitmqExchange := getEnv("RABBITMQ_EXCHANGE", "pos.events")
 
 	log.Println("==================================================")
@@ -69,7 +77,13 @@ func main() {
 	shiftService := services.NewShiftService(shiftRepo, eventPublisher)
 
 	// 4. Inisialisasi Driving Adapters (HTTP Handlers & Fiber Web Framework)
-	authHandler := httpInterface.NewAuthHandler(authService)
+	turnstileSecret := os.Getenv("CLOUDFLARE_TURNSTILE_SECRET_KEY")
+	if os.Getenv("APP_ENV") == "production" && turnstileSecret == "" {
+		log.Fatalf("[FATAL] CLOUDFLARE_TURNSTILE_SECRET_KEY wajib dikonfigurasi pada environment production untuk perlindungan bot brute-force!")
+	}
+	turnstileVerifier := turnstile.NewVerifier(turnstileSecret)
+
+	authHandler := httpInterface.NewAuthHandler(authService, turnstileVerifier)
 	shiftHandler := httpInterface.NewShiftHandler(shiftService)
 	orderHandler := httpInterface.NewOrderHandler(orderService)
 
