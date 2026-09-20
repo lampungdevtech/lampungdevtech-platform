@@ -62,7 +62,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         {
           id: 'EDP-04',
           tenantId: 'tenant-lampung-01',
-          title: 'Ottodot Roblox Science & Galaxy Quests',
+          title: 'Roblox Science & Galaxy Quests',
           description: 'Eksplorasi gravitasi, tata surya, dan sirkuit listrik dalam 200+ game sains 3D Roblox.',
           ageGroup: '7-13 Tahun (SD/SMP)',
           category: 'SCIENCE_ROBLOX',

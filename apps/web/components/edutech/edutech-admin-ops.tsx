@@ -261,7 +261,7 @@ export function EdutechAdminOps({ member, adminCapacity, enrollments, onToggleBa
                     <td className="py-2.5 font-mono text-[11px] text-primary">{enr.paymentReference}</td>
                     <td className="py-2.5 font-medium text-foreground">{enr.studentName}</td>
                     <td className="py-2.5 text-muted-foreground">{enr.parentName} ({enr.parentPhone})</td>
-                    <td className="py-2.5 text-muted-foreground">{enr.programTitle || 'Ottodot Science'}</td>
+                    <td className="py-2.5 text-muted-foreground">{enr.programTitle || (isEn ? 'STEM & Science' : 'Sains & STEM')}</td>
                     <td className="py-2.5 text-right">
                       <Badge className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-[10px]">
                         {t('paid')}

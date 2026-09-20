@@ -101,7 +101,7 @@ VALUES
     ('EDP-01', 'tenant-lampung-01', 'Logika & Koding Anak (Roblox & Scratch)', 'Membangun logika berpikir komputasional, algoritma loop, dan game development interaktif.', '7-12 Tahun (SD)', 'CODING', 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80', TRUE),
     ('EDP-02', 'tenant-lampung-01', 'Matematika Interaktif & Problem Solving', 'Mengubah konsep pecahan, geometri, dan aljabar menjadi teka-teki visual yang menyenangkan.', '8-14 Tahun (SD/SMP)', 'MATH', 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=600&q=80', TRUE),
     ('EDP-03', 'tenant-lampung-01', 'Calistung Kreatif & Literasi Visual', 'Membaca, menulis, dan berhitung dengan dongeng petualangan untuk usia dini.', '4-6 Tahun (TK/PAUD)', 'CREATIVE', 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80', TRUE),
-    ('EDP-04', 'tenant-lampung-01', 'Ottodot Roblox Science & Galaxy Quests', 'Eksplorasi gravitasi, tata surya, dan sirkuit listrik dalam 200+ game sains 3D Roblox.', '7-13 Tahun (SD/SMP)', 'SCIENCE_ROBLOX', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80', TRUE)
+    ('EDP-04', 'tenant-lampung-01', 'Roblox Science & Galaxy Quests', 'Eksplorasi gravitasi, tata surya, dan sirkuit listrik dalam 200+ game sains 3D Roblox.', '7-13 Tahun (SD/SMP)', 'SCIENCE_ROBLOX', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80', TRUE)
 ON CONFLICT (id) DO NOTHING;
 
 -- 13. EdTech Classes

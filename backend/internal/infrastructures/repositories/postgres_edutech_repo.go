@@ -84,7 +84,7 @@ func (r *postgresEdutechRepo) seedInMemoryData() {
 		{
 			ID:           "EDP-04",
 			TenantID:     "tenant-lampung-01",
-			Title:        "Ottodot Roblox Science & Galaxy Quests",
+			Title:        "Roblox Science & Galaxy Quests",
 			Description:  "Eksplorasi gravitasi, tata surya, dan sirkuit listrik dalam 200+ game sains 3D Roblox.",
 			AgeGroup:     "7-13 Tahun (SD/SMP)",
 			Category:     "SCIENCE_ROBLOX",
@@ -132,7 +132,7 @@ func (r *postgresEdutechRepo) seedInMemoryData() {
 		ID:             "EDC-03",
 		TenantID:       "tenant-lampung-01",
 		ProgramID:      "EDP-04",
-		ProgramTitle:   "Ottodot Roblox Science & Galaxy Quests",
+		ProgramTitle:   "Roblox Science & Galaxy Quests",
 		TeacherID:      "TCH-03",
 		TeacherName:    "Coach Randy Pratama (Roblox Mentor)",
 		ScheduleTime:   "Jumat, 15:30 - 17:00 WIB",

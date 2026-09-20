@@ -7,8 +7,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
   return {
     title: isEn
-      ? 'Ottodot Game-Based Learning & EdTech Platform | LampungDevTech'
-      : 'Ottodot Game-Based Learning & Bimbel EdTech | LampungDevTech',
+      ? 'Game-Based STEM & EdTech Platform | LampungDevTech'
+      : 'Game-Based STEM & Bimbel EdTech | LampungDevTech',
     description: isEn
       ? 'Roblox Game-Based STEM & Learning Center Platform. Self-serve class booking with concurrency slot locking, child-friendly AI progress reports for parents, and integrated teacher workflows.'
       : 'Platform Bimbel & STEM Game-Based Learning berbasis Roblox. Self-serve class booking anti double-booking, laporan progres AI mingguan untuk orang tua, dan dashboard terintegrasi guru.',

@@ -117,7 +117,7 @@
     "backToPrevious": "Back to Previous Page"
   },
   "edutech": {
-    "heroTag": "Ottodot x LampungDevTech • Game-Based STEM & Learning Center",
+    "heroTag": "LampungDevTech EdTech • Game-Based STEM & Learning Center",
     "heroTitle1": "Learn Coding, Math & Science",
     "heroTitle2": "Through 200+ Roblox Games & Live Classes",
     "heroDesc": "Making abstract math and science concepts feel playable, memorable, and fun. Powered by a self-serve enrollment funnel with concurrency slot locking, child-friendly AI progress evaluations, and teacher/ops workspaces.",
@@ -126,7 +126,7 @@
     "badgeAiSummary": "AI Progress Summarizer",
     "badgeTutor": "Dedicated Mentors",
     "gatedTitle": "Register as a Member to Unlock Features",
-    "gatedDesc": "Register your LampungDevTech & Ottodot member account to unlock self-serve class booking, parent progress visibility, and teacher workflows.",
+    "gatedDesc": "Register your LampungDevTech member account to unlock self-serve class booking, parent progress visibility, and teacher workflows.",
     "roleLabel": "Select Your Role on the Platform",
     "roleParent": "Parent / Student",
     "roleParentDesc": "Track progress & book classes",
@@ -152,7 +152,7 @@
     "catAll": "All Programs",
     "catCoding": "Coding & Roblox",
     "catMath": "Mathematics",
-    "catScience": "Ottodot Science",
+    "catScience": "STEM & Science",
     "catCreative": "Early Literacy",
     "batchSchedule": "Available Batch Schedules",
     "noBatch": "No class batches currently open for this program.",

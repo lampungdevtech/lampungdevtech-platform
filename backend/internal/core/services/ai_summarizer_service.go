@@ -64,7 +64,7 @@ func (s *aiSummarizerService) GenerateWeeklySummary(ctx context.Context, req dom
 func (s *aiSummarizerService) callGeminiAPI(ctx context.Context, req domain.AIProgressRequest) (*domain.AIProgressResponse, error) {
 	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=%s", s.apiKey)
 
-	systemPrompt := `You are an expert child educational psychologist and STEM tutor at Ottodot / LampungDevTech EdTech.
+	systemPrompt := `You are an expert child educational psychologist and STEM tutor at LampungDevTech EdTech Platform.
 Convert raw teacher evaluation notes and homework metrics into an encouraging, warm, and constructive weekly progress summary for the student's parents.
 Respond strictly in JSON format with keys:
 - "summary": string (Warm narrative evaluation in Indonesian, 2-3 sentences praising effort and highlighting progress)

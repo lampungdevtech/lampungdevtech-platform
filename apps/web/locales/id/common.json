@@ -117,7 +117,7 @@
     "backToPrevious": "Kembali ke Halaman Sebelumnya"
   },
   "edutech": {
-    "heroTag": "Ottodot x LampungDevTech • Game-Based STEM & Bimbel",
+    "heroTag": "LampungDevTech EdTech • Game-Based STEM & Bimbel",
     "heroTitle1": "Belajar Koding, Matematika & Sains",
     "heroTitle2": "Lewat 200+ Game Roblox & Live Class",
     "heroDesc": "Menjadikan konsep abstrak sains dan logika terasa seru dan mudah dipahami. Dilengkapi sistem pendaftaran mandiri anti double-booking, laporan kemajuan mingguan buatan AI, serta workspace guru & admin.",
@@ -126,7 +126,7 @@
     "badgeAiSummary": "AI Progress Summarizer",
     "badgeTutor": "Tutor Eksklusif",
     "gatedTitle": "Daftar Anggota untuk Membuka Fitur",
-    "gatedDesc": "Daftarkan akun member LampungDevTech Bimbel & Ottodot untuk menikmati self-serve booking kelas, pantauan progres AI, dan dashboard guru.",
+    "gatedDesc": "Daftarkan akun member LampungDevTech Bimbel untuk menikmati self-serve booking kelas, pantauan progres AI, dan dashboard guru.",
     "roleLabel": "Pilih Peran Anda di Platform",
     "roleParent": "Orang Tua / Murid",
     "roleParentDesc": "Pantau progres & booking",
@@ -152,7 +152,7 @@
     "catAll": "Semua Program",
     "catCoding": "Koding & Roblox",
     "catMath": "Matematika",
-    "catScience": "Ottodot Sains",
+    "catScience": "Sains & STEM",
     "catCreative": "Calistung",
     "batchSchedule": "Jadwal Batch Kelas Tersedia",
     "noBatch": "Belum ada batch kelas dibuka untuk program ini.",

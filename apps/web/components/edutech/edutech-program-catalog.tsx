@@ -118,7 +118,7 @@ export function EdutechProgramCatalog({ programs, classes, member, onEnroll }: P
                   {prog.category === 'SCIENCE_ROBLOX' && (
                     <Badge className="bg-amber-500/90 text-white border-none text-[10px] font-semibold flex items-center gap-1">
                       <Flame className="w-3 h-3 fill-current" />
-                      Ottodot 200+ Games
+                      200+ STEM Games
                     </Badge>
                   )}
                 </div>
