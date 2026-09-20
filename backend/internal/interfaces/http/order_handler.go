@@ -34,15 +34,10 @@ func (h *OrderHandler) CreateOrder(c *fiber.Ctx) error {
 	branchID, _ := c.Locals("branch_id").(string)
 	merchantID, _ := c.Locals("merchant_id").(string)
 
-	if order.CashierStaffID == "" {
-		order.CashierStaffID = staffID
-	}
-	if order.BranchID == "" {
-		order.BranchID = branchID
-	}
-	if order.MerchantID == "" {
-		order.MerchantID = merchantID
-	}
+	// Wajib timpa dari token JWT untuk mencegah pemalsuan identitas tenant (Tenant Spoofing)
+	order.CashierStaffID = staffID
+	order.BranchID = branchID
+	order.MerchantID = merchantID
 
 	// Hitung subtotal dan item ID jika belum di-set
 	var calculatedSubtotal int64
@@ -90,15 +85,11 @@ func (h *OrderHandler) SyncBatchOrders(c *fiber.Ctx) error {
 
 	for i := range req.Orders {
 		order := &req.Orders[i]
-		if order.CashierStaffID == "" {
-			order.CashierStaffID = staffID
-		}
-		if order.BranchID == "" {
-			order.BranchID = branchID
-		}
-		if order.MerchantID == "" {
-			order.MerchantID = merchantID
-		}
+		// Wajib timpa dari token JWT agar order offline tidak bisa memalsukan cabang/toko lain
+		order.CashierStaffID = staffID
+		order.BranchID = branchID
+		order.MerchantID = merchantID
+
 		if order.CreatedAt.IsZero() {
 			order.CreatedAt = time.Now()
 		}
@@ -130,15 +121,34 @@ func (h *OrderHandler) GetOrderByID(c *fiber.Ctx) error {
 		return response.NotFound(c, "Pesanan tidak ditemukan")
 	}
 
+	// Proteksi IDOR & Isolasi Tenant: Verifikasi kepemilikan data sebelum mengembalikan response
+	callerMerchantID, _ := c.Locals("merchant_id").(string)
+	callerBranchID, _ := c.Locals("branch_id").(string)
+	callerRole, _ := c.Locals("role").(string)
+
+	if callerRole != "SUPER_ADMIN" {
+		if order.MerchantID != callerMerchantID {
+			return response.Forbidden(c, "Akses ditolak: pesanan ini bukan milik toko/merchant Anda")
+		}
+		// Kasir hanya boleh mengakses transaksi di cabangnya sendiri
+		if callerRole == "CASHIER" && order.BranchID != callerBranchID {
+			return response.Forbidden(c, "Akses ditolak: staf kasir hanya berhak melihat transaksi pada cabangnya sendiri")
+		}
+	}
+
 	return response.OK(c, "Data pesanan ditemukan", order)
 }
 
 // GetBranchOrders handles GET /api/v1/pos/orders
 func (h *OrderHandler) GetBranchOrders(c *fiber.Ctx) error {
-	branchID := c.Query("branch_id")
-	if branchID == "" {
-		if b, ok := c.Locals("branch_id").(string); ok && b != "" {
-			branchID = b
+	callerBranchID, _ := c.Locals("branch_id").(string)
+	callerRole, _ := c.Locals("role").(string)
+
+	branchID := callerBranchID
+	// Hanya SUPER_ADMIN atau OWNER yang diizinkan melihat pesanan cabang lain via query param
+	if callerRole == "SUPER_ADMIN" || callerRole == "OWNER" {
+		if qBranch := c.Query("branch_id"); qBranch != "" {
+			branchID = qBranch
 		}
 	}
 

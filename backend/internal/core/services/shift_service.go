@@ -63,6 +63,14 @@ func (s *shiftService) CloseShift(ctx context.Context, req domain.CloseShiftRequ
 		return nil, errors.New("shift kasir ini sudah pernah ditutup sebelumnya")
 	}
 
+	// Validasi kepemilikan tenant & kasir
+	if req.MerchantID != "" && shift.MerchantID != req.MerchantID {
+		return nil, errors.New("akses ditolak: sesi shift ini milik merchant/toko lain")
+	}
+	if req.StaffID != "" && shift.StaffID != req.StaffID {
+		return nil, errors.New("akses ditolak: sesi shift ini milik staf kasir lain")
+	}
+
 	now := time.Now()
 	shift.ClosedAt = &now
 	shift.Status = domain.ShiftClosed

@@ -1,6 +1,15 @@
 import { create } from 'zustand';
 import { CartItem, Product, PaymentMethod } from '../types/pos';
 
+export interface ActivePromo {
+  id: string;
+  code: string;
+  title: string;
+  discountType: 'FIXED' | 'PERCENTAGE';
+  discountValue: number;
+  minSpend: number;
+}
+
 interface CartState {
   items: CartItem[];
   tableNumber: string;
@@ -8,6 +17,7 @@ interface CartState {
   notes: string;
   paymentMethod: PaymentMethod;
   cashGiven: number;
+  appliedPromo: ActivePromo | null;
 
   addItem: (product: Product, notes?: string) => void;
   removeItem: (productId: string) => void;
@@ -17,10 +27,13 @@ interface CartState {
   setCustomerName: (name: string) => void;
   setPaymentMethod: (method: PaymentMethod) => void;
   setCashGiven: (amount: number) => void;
+  applyPromo: (promo: ActivePromo) => { success: boolean; message: string };
+  removePromo: () => void;
   clearCart: () => void;
 
   getSubtotal: () => number;
   getTaxAmount: () => number;
+  getDiscountAmount: () => number;
   getTotal: () => number;
   getChange: () => number;
 }
@@ -32,6 +45,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   notes: '',
   paymentMethod: 'CASH',
   cashGiven: 0,
+  appliedPromo: null,
 
   addItem: (product, notes) => {
     set((state) => {
@@ -79,6 +93,23 @@ export const useCartStore = create<CartState>((set, get) => ({
   setPaymentMethod: (paymentMethod) => set({ paymentMethod }),
   setCashGiven: (cashGiven) => set({ cashGiven }),
 
+  applyPromo: (promo) => {
+    const subtotal = get().getSubtotal();
+    if (subtotal < promo.minSpend) {
+      return {
+        success: false,
+        message: `Minimal belanja Rp ${promo.minSpend.toLocaleString('id-ID')} untuk promo ${promo.code}`,
+      };
+    }
+    set({ appliedPromo: promo });
+    return {
+      success: true,
+      message: `Promo ${promo.code} berhasil diterapkan!`,
+    };
+  },
+
+  removePromo: () => set({ appliedPromo: null }),
+
   clearCart: () =>
     set({
       items: [],
@@ -87,6 +118,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       notes: '',
       paymentMethod: 'CASH',
       cashGiven: 0,
+      appliedPromo: null,
     }),
 
   getSubtotal: () => {
@@ -98,8 +130,22 @@ export const useCartStore = create<CartState>((set, get) => ({
     return Math.round(get().getSubtotal() * 0.1);
   },
 
+  getDiscountAmount: () => {
+    const promo = get().appliedPromo;
+    if (!promo) return 0;
+    const subtotal = get().getSubtotal();
+    if (subtotal < promo.minSpend) return 0;
+    if (promo.discountType === 'FIXED') {
+      return Math.min(subtotal, promo.discountValue);
+    }
+    return Math.round((subtotal * promo.discountValue) / 100);
+  },
+
   getTotal: () => {
-    return get().getSubtotal() + get().getTaxAmount();
+    const subtotal = get().getSubtotal();
+    const tax = get().getTaxAmount();
+    const discount = get().getDiscountAmount();
+    return Math.max(0, subtotal + tax - discount);
   },
 
   getChange: () => {

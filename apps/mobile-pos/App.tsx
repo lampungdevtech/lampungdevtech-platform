@@ -16,10 +16,71 @@ import { Product, CartItem, OrderRecord } from './src/types/pos';
 import { INITIAL_PRODUCTS, LocalRepository } from './src/database/repository';
 import { useAuthStore } from './src/stores/auth-store';
 import { useShiftStore } from './src/stores/shift-store';
-import { useCartStore } from './src/stores/cart-store';
+import { useCartStore, ActivePromo } from './src/stores/cart-store';
 import { getULID } from './src/utils/ulid';
 import { buildCustomerReceipt, buildKitchenOrderTicket } from './src/utils/escpos';
 import { SyncEngine } from './src/services/sync-engine';
+
+export const AVAILABLE_BRANCHES = [
+  {
+    id: '01-MAIN',
+    name: 'Cabang 01: Enggal (Pusat)',
+    address: 'Jl. Raden Intan No. 45, Enggal, Bandar Lampung',
+    tablesCount: 14,
+  },
+  {
+    id: '02-KEMILING',
+    name: 'Cabang 02: Kemiling Outlet',
+    address: 'Jl. Imam Bonjol No. 88, Kemiling, Bandar Lampung',
+    tablesCount: 8,
+  },
+];
+
+export const AVAILABLE_STAFF = [
+  {
+    staffId: 'STF-01',
+    name: 'Ahmad Fauzi',
+    role: 'Senior Cashier',
+    branchId: '01-MAIN',
+    email: 'ahmad@kopitemu.com',
+    defaultPin: '123456',
+  },
+  {
+    staffId: 'STF-02',
+    name: 'Citra Dewi',
+    role: 'Outlet Cashier',
+    branchId: '01-MAIN',
+    email: 'citra@kopitemu.com',
+    defaultPin: '123456',
+  },
+  {
+    staffId: 'STF-03',
+    name: 'Budi Santoso',
+    role: 'Barista & Kasir',
+    branchId: '02-KEMILING',
+    email: 'budi@kopitemu.com',
+    defaultPin: '123456',
+  },
+];
+
+export const ACTIVE_PROMOTIONS: ActivePromo[] = [
+  {
+    id: 'PRM-01',
+    code: 'WESELHEMAT',
+    title: 'Potongan Rp 10.000 QRIS Wesel Aja',
+    discountType: 'FIXED',
+    discountValue: 10000,
+    minSpend: 50000,
+  },
+  {
+    id: 'PRM-02',
+    code: 'HAPPYCOFFEE',
+    title: 'Happy Hour Coffee 20%',
+    discountType: 'PERCENTAGE',
+    discountValue: 20,
+    minSpend: 35000,
+  },
+];
 
 export default function App() {
   // Navigation tabs: 'pos' | 'kds' | 'reports'
@@ -34,8 +95,10 @@ export default function App() {
   const { activeShift, openShift, recordSale, closeShift } = useShiftStore();
   const cart = useCartStore();
 
-  // Form states for login
-  const [loginEmail, setLoginEmail] = useState('kasir@kopitemu.com');
+  // Form states for login & branch sync
+  const [selectedBranchId, setSelectedBranchId] = useState('01-MAIN');
+  const [selectedStaffId, setSelectedStaffId] = useState('STF-01');
+  const [loginEmail, setLoginEmail] = useState('ahmad@kopitemu.com');
   const [loginPin, setLoginPin] = useState('123456');
 
   // Modal states
@@ -62,45 +125,61 @@ export default function App() {
     setRecentOrders(loadedOrders);
   };
 
-  // 1. Alur Login Kasir
+  // 1. Alur Login Kasir dengan Sinkronisasi Cabang & Staf
   const handleLogin = () => {
     if (loginPin.length < 4) {
-      Alert.alert('PIN Invalid', 'Masukkan PIN kasir 6-digit');
+      Alert.alert('PIN Invalid', 'Masukkan PIN kasir minimal 4-digit (default 123456)');
       return;
     }
 
+    const branch = AVAILABLE_BRANCHES.find((b) => b.id === selectedBranchId) || AVAILABLE_BRANCHES[0];
+    const staff = AVAILABLE_STAFF.find((s) => s.staffId === selectedStaffId) || AVAILABLE_STAFF[0];
+
     login({
-      staffId: 'STF-' + loginPin.slice(-4),
-      name: 'Ahmad Fauzi (Kasir)',
-      email: loginEmail,
-      role: 'CASHIER',
-      branchId: 'BR-01',
-      branchName: 'Kopi Ruang Temu - Cabang Utama',
+      staffId: staff.staffId,
+      name: staff.name,
+      email: loginEmail || staff.email,
+      role: staff.role,
+      branchId: branch.id,
+      branchName: branch.name,
       merchantId: 'MCH-01',
-      token: 'jwt-mock-staff-token',
+      token: `jwt-staff-${staff.staffId}`,
     });
 
-    // Jika belum ada shift aktif, paksa buka shift dengan modal awal kas
+    // Jika belum ada shift aktif, buka modal modal awal kas
     if (!activeShift) {
       setShowOpenShiftModal(true);
     }
   };
 
-  // 2. Alur Pembukaan Shift Kasir (Modal Kas Awal)
+  // 2. Alur Pembukaan Shift Kasir (Modal Kas Awal Berdasarkan Cabang & Staf)
   const handleOpenShift = async () => {
     const floatAmount = parseInt(initialFloatInput, 10) || 0;
-    const shift = openShift('STF-DEMO', 'BR-01', 'MCH-01', floatAmount);
+    const staffId = session?.staffId || selectedStaffId;
+    const branchId = session?.branchId || selectedBranchId;
+    const merchantId = session?.merchantId || 'MCH-01';
+
+    const shift = openShift(staffId, branchId, merchantId, floatAmount);
     await LocalRepository.saveShift(shift);
+
+    if (isOnline) {
+      SyncEngine.syncPending(session?.token);
+    }
+
     setShowOpenShiftModal(false);
-    Alert.alert('Shift Dimulai', `Modal kas awal Rp ${floatAmount.toLocaleString('id-ID')} tercatat.`);
+    Alert.alert(
+      'Shift Kasir Dimulai',
+      `Modal awal kas Rp ${floatAmount.toLocaleString('id-ID')} tercatat untuk ${session?.name || 'Kasir'} di ${session?.branchName || 'Cabang'}.`
+    );
   };
 
-  // 3. Alur Checkout & Pembayaran
+  // 3. Alur Checkout & Pembayaran dengan Promo Otomatis
   const handleCheckoutSubmit = async () => {
     if (cart.items.length === 0) return;
 
     const total = cart.getTotal();
     const tendered = parseInt(cashTendered, 10) || total;
+    const discountAmount = cart.getDiscountAmount();
 
     if (paymentMethod === 'CASH' && tendered < total) {
       Alert.alert('Uang Kurang', 'Jumlah uang tunai yang dimasukkan kurang dari total tagihan.');
@@ -108,16 +187,19 @@ export default function App() {
     }
 
     const orderId = getULID();
+    const branchId = session?.branchId || selectedBranchId;
+    const cashierStaffId = session?.staffId || selectedStaffId;
+
     const newOrder: OrderRecord = {
       id: orderId,
       shiftId: activeShift?.id || 'SHIFT-DEMO',
-      branchId: session?.branchId || 'BR-01',
-      cashierStaffId: session?.staffId || 'STF-DEMO',
+      branchId,
+      cashierStaffId,
       tableNumber: cart.tableNumber,
       customerName: cart.customerName || 'Pelanggan Meja ' + cart.tableNumber,
       subtotal: cart.getSubtotal(),
       taxAmount: cart.getTaxAmount(),
-      discountAmount: 0,
+      discountAmount,
       totalAmount: total,
       paymentMethod,
       paymentStatus: 'PAID',
@@ -142,11 +224,14 @@ export default function App() {
     // Update shift record
     recordSale(total, paymentMethod === 'CASH');
 
+    // Alamat struk berdasarkan cabang aktif
+    const currentBranch = AVAILABLE_BRANCHES.find((b) => b.id === branchId) || AVAILABLE_BRANCHES[0];
+
     // Generate ESC/POS Printer Commands (Bluetooth)
     const receiptData = {
       storeName: 'KOPI RUANG TEMU',
-      branchName: session?.branchName || 'Cabang Utama',
-      branchAddress: 'Jl. ZA. Pagar Alam No. 42, Bandar Lampung',
+      branchName: session?.branchName || currentBranch.name,
+      branchAddress: currentBranch.address,
       orderId,
       cashierName: session?.name || 'Kasir',
       tableNumber: cart.tableNumber,
@@ -159,7 +244,7 @@ export default function App() {
       })),
       subtotal: cart.getSubtotal(),
       taxAmount: cart.getTaxAmount(),
-      discountAmount: 0,
+      discountAmount,
       total,
       cashGiven: paymentMethod === 'CASH' ? tendered : undefined,
       change: paymentMethod === 'CASH' ? tendered - total : undefined,
@@ -185,7 +270,9 @@ export default function App() {
 
     Alert.alert(
       'Transaksi Berhasil!',
-      `Order #${orderId.slice(-6)} sukses.\nKembalian: Rp ${Math.max(0, tendered - total).toLocaleString('id-ID')}`
+      `Order #${orderId.slice(-6)} sukses tercatat.\nTotal: Rp ${total.toLocaleString('id-ID')}${
+        discountAmount > 0 ? ` (Hemat Rp ${discountAmount.toLocaleString('id-ID')})` : ''
+      }\nKembalian: Rp ${Math.max(0, tendered - total).toLocaleString('id-ID')}`
     );
   };
 
@@ -195,78 +282,143 @@ export default function App() {
     try {
       const { variance, shift } = closeShift(actualCash);
       await LocalRepository.saveShift(shift);
+
+      if (isOnline) {
+        SyncEngine.syncPending(session?.token);
+      }
+
       setShowCloseShiftModal(false);
 
       const varianceText =
         variance === 0
-          ? 'PAS (Tidak ada selisih)'
+          ? 'PAS (Tidak ada selisih uang kas)'
           : variance > 0
           ? `SURPLUS +Rp ${variance.toLocaleString('id-ID')}`
           : `MINUS -Rp ${Math.abs(variance).toLocaleString('id-ID')}`;
 
       Alert.alert(
-        'Shift Ditutup (Z-Report)',
-        `Total Penjualan: Rp ${shift.totalCashSales + shift.totalNonCash}\nUang Fisik Kasir: Rp ${actualCash.toLocaleString(
+        'Shift Ditutup (Z-Report Rekonsiliasi)',
+        `Cabang: ${session?.branchName || '-'}\nKasir: ${session?.name || '-'}\nTotal Omzet: Rp ${(
+          shift.totalCashSales + shift.totalNonCash
+        ).toLocaleString('id-ID')}\nUang Fisik Kasir: Rp ${actualCash.toLocaleString(
           'id-ID'
         )}\nStatus Selisih: ${varianceText}`
       );
       setActualCashInput('');
     } catch (e: any) {
-      Alert.alert('Error', e.message);
+      Alert.alert('Error Tutup Shift', e.message);
     }
   };
 
-  // Tampilan belum login
+  // Tampilan belum login dengan Sinkronisasi Multi-Cabang & Staf
   if (!isAuthenticated) {
     return (
       <SafeAreaView style={styles.darkContainer}>
         <StatusBar barStyle="light-content" />
-        <View style={styles.loginCard}>
-          <View style={styles.badgeRow}>
-            <View style={styles.greenBadge}>
-              <Text style={styles.greenBadgeText}>● Offline-First Terminal</Text>
+        <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+          <View style={styles.loginCard}>
+            <View style={styles.badgeRow}>
+              <View style={styles.greenBadge}>
+                <Text style={styles.greenBadgeText}>● Offline-First Terminal Sync</Text>
+              </View>
             </View>
+            <Text style={styles.brandTitle}>LampungDev POS</Text>
+            <Text style={styles.brandSubtitle}>
+              Aplikasi Kasir Tablet & Mobile untuk Entrepreneur Kafe
+            </Text>
+
+            {/* Pilihan Cabang */}
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Pilih Cabang Gerai</Text>
+              <View style={styles.branchSelectRow}>
+                {AVAILABLE_BRANCHES.map((b) => {
+                  const isSelected = selectedBranchId === b.id;
+                  return (
+                    <TouchableOpacity
+                      key={b.id}
+                      style={[styles.branchSelectBtn, isSelected && styles.branchSelectBtnActive]}
+                      onPress={() => setSelectedBranchId(b.id)}
+                    >
+                      <Text
+                        style={[
+                          styles.branchSelectText,
+                          isSelected && styles.branchSelectTextActive,
+                        ]}
+                      >
+                        {b.name.includes(':') ? b.name.split(':')[1]?.trim() : b.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Pilihan Profil Staf */}
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Pilih Profil Staf Kasir</Text>
+              <View style={styles.staffPickerRow}>
+                {AVAILABLE_STAFF.map((stf) => {
+                  const isSelected = selectedStaffId === stf.staffId;
+                  return (
+                    <TouchableOpacity
+                      key={stf.staffId}
+                      style={[styles.staffChip, isSelected && styles.staffChipActive]}
+                      onPress={() => {
+                        setSelectedStaffId(stf.staffId);
+                        setLoginEmail(stf.email);
+                        setSelectedBranchId(stf.branchId);
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.staffChipText,
+                          isSelected && styles.staffChipTextActive,
+                        ]}
+                      >
+                        {stf.name} ({stf.role === 'CASHIER' ? 'Kasir' : 'Barista'})
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Email Staf Kasir</Text>
+              <TextInput
+                style={styles.input}
+                value={loginEmail}
+                onChangeText={setLoginEmail}
+                placeholder="kasir@kopitemu.com"
+                placeholderTextColor="#64748b"
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Kode PIN Kasir (6-Digit)</Text>
+              <TextInput
+                style={[styles.input, styles.pinInput]}
+                value={loginPin}
+                onChangeText={setLoginPin}
+                placeholder="123456"
+                placeholderTextColor="#64748b"
+                secureTextEntry
+                keyboardType="number-pad"
+                maxLength={6}
+              />
+            </View>
+
+            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
+              <Text style={styles.primaryButtonText}>Masuk ke Kasir POS</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.loginHint}>
+              PIN default: 123456 • Data tersinkron ke database lokal & cloud microservice.
+            </Text>
           </View>
-          <Text style={styles.brandTitle}>LampungDev POS</Text>
-          <Text style={styles.brandSubtitle}>
-            Aplikasi Kasir Tablet & Mobile untuk Entrepreneur Kafe
-          </Text>
-
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Email Staf Kasir</Text>
-            <TextInput
-              style={styles.input}
-              value={loginEmail}
-              onChangeText={setLoginEmail}
-              placeholder="kasir@kopitemu.com"
-              placeholderTextColor="#64748b"
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
-          </View>
-
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Kode PIN Kasir (6-Digit)</Text>
-            <TextInput
-              style={[styles.input, styles.pinInput]}
-              value={loginPin}
-              onChangeText={setLoginPin}
-              placeholder="123456"
-              placeholderTextColor="#64748b"
-              secureTextEntry
-              keyboardType="number-pad"
-              maxLength={6}
-            />
-          </View>
-
-          <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
-            <Text style={styles.primaryButtonText}>Masuk ke Kasir POS</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.loginHint}>
-            Demo Mode: Gunakan PIN default 123456 untuk simulasi kasir.
-          </Text>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -459,6 +611,51 @@ export default function App() {
               )}
             </ScrollView>
 
+            {/* Kupon Promo & Diskon Aktif */}
+            <View style={styles.promoCartSection}>
+              <Text style={styles.promoSectionTitle}>Kupon & Diskon Aktif:</Text>
+              <View style={styles.promoChipsList}>
+                {ACTIVE_PROMOTIONS.map((promo) => {
+                  const isApplied = cart.appliedPromo?.code === promo.code;
+                  return (
+                    <TouchableOpacity
+                      key={promo.id}
+                      style={[styles.promoChipSmall, isApplied && styles.promoChipSmallActive]}
+                      onPress={() => {
+                        if (isApplied) {
+                          cart.removePromo();
+                        } else {
+                          const res = cart.applyPromo(promo);
+                          if (!res.success) {
+                            Alert.alert('Syarat Promo Belum Terpenuhi', res.message);
+                          }
+                        }
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.promoChipSmallText,
+                          isApplied && styles.promoChipSmallTextActive,
+                        ]}
+                      >
+                        {isApplied ? `✓ ${promo.code}` : `+ ${promo.code}`}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+              {cart.appliedPromo && (
+                <View style={styles.appliedPromoBadge}>
+                  <Text style={styles.appliedPromoText}>
+                    🎉 {cart.appliedPromo.title} (-Rp {cart.getDiscountAmount().toLocaleString('id-ID')})
+                  </Text>
+                  <TouchableOpacity onPress={cart.removePromo}>
+                    <Text style={styles.removePromoText}>✕ Hapus</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+
             {/* Ringkasan & Tombol Bayar */}
             <View style={styles.cartFooter}>
               <View style={styles.summaryRow}>
@@ -467,6 +664,16 @@ export default function App() {
                   Rp {cart.getSubtotal().toLocaleString('id-ID')}
                 </Text>
               </View>
+              {cart.getDiscountAmount() > 0 && (
+                <View style={styles.summaryRow}>
+                  <Text style={[styles.summaryLabel, { color: '#34d399' }]}>
+                    Diskon ({cart.appliedPromo?.code})
+                  </Text>
+                  <Text style={[styles.summaryValue, { color: '#34d399', fontWeight: '700' }]}>
+                    -Rp {cart.getDiscountAmount().toLocaleString('id-ID')}
+                  </Text>
+                </View>
+              )}
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>PB1 (10%)</Text>
                 <Text style={styles.summaryValue}>
@@ -608,11 +815,41 @@ export default function App() {
         </View>
       </Modal>
 
-      {/* MODAL 2: CHECKOUT & METODE PEMBAYARAN */}
+      {/* MODAL 2: CHECKOUT & METODE PEMBAYARAN DENGAN PROMO SYNC */}
       <Modal visible={showCheckoutModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Pembayaran Kasir</Text>
+            <Text style={styles.modalSub}>
+              {session?.branchName || 'Cabang'} • Kasir: {session?.name || 'Kasir'}
+            </Text>
+
+            {/* Breakdown Rincian Biaya */}
+            <View style={styles.modalBreakdown}>
+              <View style={styles.breakdownRow}>
+                <Text style={styles.breakdownLabel}>Subtotal Pesanan</Text>
+                <Text style={styles.breakdownValue}>
+                  Rp {cart.getSubtotal().toLocaleString('id-ID')}
+                </Text>
+              </View>
+              {cart.getDiscountAmount() > 0 && (
+                <View style={styles.breakdownRow}>
+                  <Text style={[styles.breakdownLabel, { color: '#34d399' }]}>
+                    Diskon ({cart.appliedPromo?.code})
+                  </Text>
+                  <Text style={[styles.breakdownValue, { color: '#34d399', fontWeight: 'bold' }]}>
+                    -Rp {cart.getDiscountAmount().toLocaleString('id-ID')}
+                  </Text>
+                </View>
+              )}
+              <View style={styles.breakdownRow}>
+                <Text style={styles.breakdownLabel}>Pajak Restoran PB1 (10%)</Text>
+                <Text style={styles.breakdownValue}>
+                  Rp {cart.getTaxAmount().toLocaleString('id-ID')}
+                </Text>
+              </View>
+            </View>
+
             <Text style={styles.checkoutTotalAmount}>
               Rp {cart.getTotal().toLocaleString('id-ID')}
             </Text>
@@ -622,14 +859,50 @@ export default function App() {
                 <TouchableOpacity
                   key={m}
                   style={[styles.methodBtn, paymentMethod === m && styles.activeMethodBtn]}
-                  onPress={() => setPaymentMethod(m)}
+                  onPress={() => {
+                    setPaymentMethod(m);
+                    if (m === 'QRIS' && cart.getSubtotal() >= 50000 && !cart.appliedPromo) {
+                      const weselPromo = ACTIVE_PROMOTIONS.find((p) => p.code === 'WESELHEMAT');
+                      if (weselPromo) {
+                        cart.applyPromo(weselPromo);
+                      }
+                    }
+                  }}
                 >
-                  <Text style={[styles.methodBtnText, paymentMethod === m && styles.activeMethodBtnText]}>
-                    {m}
+                  <Text
+                    style={[
+                      styles.methodBtnText,
+                      paymentMethod === m && styles.activeMethodBtnText,
+                    ]}
+                  >
+                    {m === 'QRIS' ? 'QRIS Wesel' : m === 'CARD' ? 'EDC Kartu' : 'Tunai / Cash'}
                   </Text>
                 </TouchableOpacity>
               ))}
             </View>
+
+            {paymentMethod === 'QRIS' && (
+              <View style={styles.qrisNoticeBox}>
+                <Text style={styles.qrisNoticeTitle}>⚡ QRIS Payment Gateway (Wesel Aja)</Text>
+                <Text style={styles.qrisNoticeSubtitle}>
+                  Scan QR dinamis via GoPay, BCA, Mandiri, OVO, ShopeePay & Dana langsung diverifikasi ke server.
+                </Text>
+                {cart.appliedPromo?.code === 'WESELHEMAT' && (
+                  <Text style={styles.qrisPromoAppliedText}>
+                    ✨ Promo WESELHEMAT Aktif: Potongan Rp 10.000 berhasil dipasang!
+                  </Text>
+                )}
+              </View>
+            )}
+
+            {paymentMethod === 'CARD' && (
+              <View style={styles.qrisNoticeBox}>
+                <Text style={styles.qrisNoticeTitle}>💳 EDC Terminal Kartu</Text>
+                <Text style={styles.qrisNoticeSubtitle}>
+                  Proses kartu Debit/Kredit melalui mesin EDC Bank BCA / BNI / Mandiri di meja kasir.
+                </Text>
+              </View>
+            )}
 
             {paymentMethod === 'CASH' && (
               <View style={styles.cashInputSection}>
@@ -665,7 +938,7 @@ export default function App() {
                 style={styles.confirmCheckoutBtn}
                 onPress={handleCheckoutSubmit}
               >
-                <Text style={styles.confirmCheckoutBtnText}>Selesaikan Transaksi</Text>
+                <Text style={styles.confirmCheckoutBtnText}>Selesaikan & Struk</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -1406,5 +1679,173 @@ const styles = StyleSheet.create({
   dangerBtnText: {
     color: '#ffffff',
     fontWeight: '700',
+  },
+
+  // Branch & Staff Selectors in Login
+  branchSelectRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 4,
+  },
+  branchSelectBtn: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#334155',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+  },
+  branchSelectBtnActive: {
+    backgroundColor: '#064e3b',
+    borderColor: '#10b981',
+  },
+  branchSelectText: {
+    color: '#94a3b8',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  branchSelectTextActive: {
+    color: '#34d399',
+    fontWeight: 'bold',
+  },
+  staffPickerRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 4,
+  },
+  staffChip: {
+    backgroundColor: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#334155',
+    borderRadius: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  staffChipActive: {
+    backgroundColor: '#1e3a8a',
+    borderColor: '#38bdf8',
+  },
+  staffChipText: {
+    color: '#94a3b8',
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  staffChipTextActive: {
+    color: '#38bdf8',
+    fontWeight: 'bold',
+  },
+
+  // Promo in Cart
+  promoCartSection: {
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 4,
+    backgroundColor: '#0f172a',
+    borderTopWidth: 1,
+    borderTopColor: '#1e293b',
+  },
+  promoSectionTitle: {
+    color: '#94a3b8',
+    fontSize: 11,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  promoChipsList: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  promoChipSmall: {
+    backgroundColor: '#1e293b',
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  promoChipSmallActive: {
+    backgroundColor: '#064e3b',
+    borderColor: '#10b981',
+  },
+  promoChipSmallText: {
+    color: '#cbd5e1',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  promoChipSmallTextActive: {
+    color: '#34d399',
+  },
+  appliedPromoBadge: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#064e3b',
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginTop: 6,
+  },
+  appliedPromoText: {
+    color: '#34d399',
+    fontSize: 11,
+    fontWeight: '600',
+    flex: 1,
+  },
+  removePromoText: {
+    color: '#f87171',
+    fontSize: 11,
+    fontWeight: 'bold',
+    marginLeft: 6,
+  },
+
+  // Modal Checkout Breakdown & Notice
+  modalBreakdown: {
+    backgroundColor: '#0f172a',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#1e293b',
+  },
+  breakdownRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 3,
+  },
+  breakdownLabel: {
+    color: '#94a3b8',
+    fontSize: 12,
+  },
+  breakdownValue: {
+    color: '#f8fafc',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  qrisNoticeBox: {
+    backgroundColor: '#0f172a',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#1e293b',
+  },
+  qrisNoticeTitle: {
+    color: '#38bdf8',
+    fontWeight: 'bold',
+    fontSize: 13,
+    marginBottom: 4,
+  },
+  qrisNoticeSubtitle: {
+    color: '#94a3b8',
+    fontSize: 11,
+    lineHeight: 16,
+  },
+  qrisPromoAppliedText: {
+    color: '#34d399',
+    fontSize: 11,
+    fontWeight: 'bold',
+    marginTop: 6,
   },
 });

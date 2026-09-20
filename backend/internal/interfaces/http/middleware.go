@@ -49,3 +49,22 @@ func JWTMiddleware(jwtSecret string) fiber.Handler {
 		return c.Next()
 	}
 }
+
+// RequireRoles membatasi akses endpoint hanya untuk role tertentu
+func RequireRoles(allowedRoles ...string) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userRole, _ := c.Locals("role").(string)
+		if userRole == "" {
+			return response.Unauthorized(c, "Otentikasi diperlukan")
+		}
+
+		for _, role := range allowedRoles {
+			if userRole == role {
+				return c.Next()
+			}
+		}
+
+		return response.Forbidden(c, "Anda tidak memiliki wewenang (role) untuk mengakses resource ini")
+	}
+}
+

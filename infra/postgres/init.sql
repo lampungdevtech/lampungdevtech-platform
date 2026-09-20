@@ -138,3 +138,233 @@ CREATE TABLE IF NOT EXISTS outbox_events (
 CREATE INDEX IF NOT EXISTS idx_orders_branch ON orders(branch_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_shifts_staff ON cashier_shifts(staff_id, status);
 CREATE INDEX IF NOT EXISTS idx_outbox_pending ON outbox_events(status) WHERE status = 'PENDING';
+
+-- ==========================================================
+-- MODUL OWNER BUSINESS INTELLIGENCE & MANAGEMENT PORTAL
+-- ==========================================================
+
+-- 10. Tabel Akun Rekening Bank Usaha (Dinamis)
+CREATE TABLE IF NOT EXISTS bank_accounts (
+    id VARCHAR(26) PRIMARY KEY,
+    merchant_id VARCHAR(26) NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    branch_id VARCHAR(26) REFERENCES branches(id) ON DELETE SET NULL,
+    bank_name VARCHAR(100) NOT NULL, -- 'Bank BCA', 'Bank BNI', 'Bank Mandiri', dll.
+    account_number VARCHAR(100) NOT NULL,
+    holder_name VARCHAR(150) NOT NULL,
+    balance BIGINT NOT NULL DEFAULT 0,
+    is_primary BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 11. Tabel Purchase Orders (PO Bahan Baku & Restock)
+CREATE TABLE IF NOT EXISTS purchase_orders (
+    id VARCHAR(26) PRIMARY KEY,
+    merchant_id VARCHAR(26) NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    branch_id VARCHAR(26) NOT NULL REFERENCES branches(id) ON DELETE CASCADE,
+    po_number VARCHAR(50) NOT NULL UNIQUE,
+    material_id VARCHAR(26) NOT NULL,
+    material_name VARCHAR(150) NOT NULL,
+    quantity NUMERIC(12, 2) NOT NULL,
+    unit VARCHAR(20) NOT NULL,
+    total_cost BIGINT NOT NULL,
+    supplier_name VARCHAR(150) NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'PENDING', -- 'PENDING', 'APPROVED', 'RECEIVED'
+    order_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    received_date DATE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 12. Tabel Roster Jadwal Kerja & Presensi Staf (7 Hari)
+CREATE TABLE IF NOT EXISTS staff_shifts (
+    id VARCHAR(26) PRIMARY KEY,
+    merchant_id VARCHAR(26) NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    branch_id VARCHAR(26) NOT NULL REFERENCES branches(id) ON DELETE CASCADE,
+    staff_id VARCHAR(26) NOT NULL REFERENCES staff_members(id) ON DELETE CASCADE,
+    staff_name VARCHAR(150) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    shift_date DATE NOT NULL,
+    day_name VARCHAR(30) NOT NULL,
+    shift_type VARCHAR(20) NOT NULL DEFAULT 'PAGI', -- 'PAGI', 'MALAM', 'OFF'
+    shift_hours VARCHAR(50) NOT NULL DEFAULT '07:00 - 15:00',
+    attendance_status VARCHAR(30) NOT NULL DEFAULT 'UPCOMING', -- 'ON_TIME', 'LATE', 'ABSENT', 'UPCOMING'
+    late_minutes INT DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 13. Tabel Kupon & Promosi Aktif (Voucher Diskon)
+CREATE TABLE IF NOT EXISTS promotions (
+    id VARCHAR(26) PRIMARY KEY,
+    merchant_id VARCHAR(26) NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    code VARCHAR(50) NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    discount_type VARCHAR(30) NOT NULL DEFAULT 'PERCENTAGE', -- 'PERCENTAGE', 'FIXED', 'BUY1GET1'
+    discount_value BIGINT NOT NULL DEFAULT 0,
+    min_spend BIGINT NOT NULL DEFAULT 0,
+    quota_total INT NOT NULL DEFAULT 100,
+    quota_used INT NOT NULL DEFAULT 0,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    valid_until DATE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 14. Tabel Database Member & CRM Pelanggan
+CREATE TABLE IF NOT EXISTS customers (
+    id VARCHAR(26) PRIMARY KEY,
+    merchant_id VARCHAR(26) NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    name VARCHAR(150) NOT NULL,
+    email VARCHAR(150),
+    phone VARCHAR(50) NOT NULL,
+    tier VARCHAR(30) NOT NULL DEFAULT 'SILVER', -- 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'
+    loyalty_points INT NOT NULL DEFAULT 0,
+    total_spent BIGINT NOT NULL DEFAULT 0,
+    can_order_web BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 15. Tabel Inventaris Aset & Peralatan Kafe
+CREATE TABLE IF NOT EXISTS equipment_assets (
+    id VARCHAR(26) PRIMARY KEY,
+    merchant_id VARCHAR(26) NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    branch_id VARCHAR(26) REFERENCES branches(id) ON DELETE SET NULL,
+    asset_code VARCHAR(50) NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    category VARCHAR(50) NOT NULL DEFAULT 'EQUIPMENT',
+    purchase_cost BIGINT NOT NULL,
+    purchase_date DATE NOT NULL,
+    condition_status VARCHAR(30) NOT NULL DEFAULT 'EXCELLENT', -- 'EXCELLENT', 'GOOD', 'REPAIR'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 16. Tabel Retribusi Parkir Mingguan (Bagi Hasil 60:40)
+CREATE TABLE IF NOT EXISTS parking_reports (
+    id VARCHAR(26) PRIMARY KEY,
+    merchant_id VARCHAR(26) NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    branch_id VARCHAR(26) NOT NULL REFERENCES branches(id) ON DELETE CASCADE,
+    period_label VARCHAR(100) NOT NULL,
+    coordinator_name VARCHAR(150) NOT NULL DEFAULT 'Juru Parkir',
+    gross_amount BIGINT NOT NULL,
+    store_share BIGINT NOT NULL,
+    keeper_share BIGINT NOT NULL,
+    motorcycle_count INT DEFAULT 0,
+    car_count INT DEFAULT 0,
+    status VARCHAR(30) NOT NULL DEFAULT 'ONGOING', -- 'SETTLED', 'ONGOING'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 17. Tabel Dokumen Standar Operasional Prosedur (SOP)
+CREATE TABLE IF NOT EXISTS standard_operating_procedures (
+    id VARCHAR(26) PRIMARY KEY,
+    merchant_id VARCHAR(26) NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    title VARCHAR(200) NOT NULL,
+    category VARCHAR(50) NOT NULL, -- 'OPENING', 'CLOSING', 'BARISTA', 'CLEANING'
+    role_target VARCHAR(50) NOT NULL DEFAULT 'ALL',
+    steps JSONB NOT NULL DEFAULT '[]'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 18. Tabel Live Audit Log (Security & Activity Feed)
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id VARCHAR(26) PRIMARY KEY,
+    merchant_id VARCHAR(26) NOT NULL REFERENCES merchants(id) ON DELETE CASCADE,
+    branch_id VARCHAR(26) REFERENCES branches(id) ON DELETE SET NULL,
+    staff_id VARCHAR(26),
+    staff_name VARCHAR(150) NOT NULL,
+    action VARCHAR(100) NOT NULL,
+    ip_address VARCHAR(50) NOT NULL,
+    device VARCHAR(100),
+    status VARCHAR(30) NOT NULL DEFAULT 'SUCCESS',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bank_merchant ON bank_accounts(merchant_id);
+CREATE INDEX IF NOT EXISTS idx_po_branch ON purchase_orders(branch_id, status);
+CREATE INDEX IF NOT EXISTS idx_shifts_date ON staff_shifts(branch_id, shift_date);
+CREATE INDEX IF NOT EXISTS idx_promos_code ON promotions(code, is_active);
+CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
+CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_logs(created_at DESC);
+
+-- ==========================================================
+-- MODUL EDTECH CLASS OPERATIONS & SELF-SERVE ENROLLMENT
+-- ==========================================================
+
+-- 19. Tabel Program Bimbel / EdTech Kurikulum
+CREATE TABLE IF NOT EXISTS edutech_programs (
+    id VARCHAR(64) PRIMARY KEY,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'tenant-default',
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    age_group VARCHAR(64) NOT NULL, -- e.g. '7-10 Tahun (SD)', '11-14 Tahun (SMP)'
+    category VARCHAR(64) NOT NULL, -- 'CODING', 'MATH', 'SCIENCE_ROBLOX', 'CREATIVE'
+    thumbnail_url VARCHAR(255),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 20. Tabel Sesi / Batch Kelas (Slot & Kapasitas Kursi)
+CREATE TABLE IF NOT EXISTS edutech_classes (
+    id VARCHAR(64) PRIMARY KEY,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'tenant-default',
+    program_id VARCHAR(64) NOT NULL REFERENCES edutech_programs(id) ON DELETE CASCADE,
+    teacher_id VARCHAR(64) NOT NULL,
+    teacher_name VARCHAR(255) NOT NULL,
+    schedule_time VARCHAR(128) NOT NULL, -- e.g. 'Sabtu & Minggu, 09:00 - 10:30 WIB'
+    max_seats INT NOT NULL DEFAULT 10,
+    booked_seats INT NOT NULL DEFAULT 0,
+    price NUMERIC(15,2) NOT NULL DEFAULT 0,
+    session_link VARCHAR(255),
+    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE', -- 'ACTIVE', 'FULL', 'COMPLETED'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 21. Tabel Pendaftaran Siswa (Enrollment)
+CREATE TABLE IF NOT EXISTS edutech_enrollments (
+    id VARCHAR(64) PRIMARY KEY,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'tenant-default',
+    class_id VARCHAR(64) NOT NULL REFERENCES edutech_classes(id) ON DELETE CASCADE,
+    student_id VARCHAR(64) NOT NULL,
+    student_name VARCHAR(255) NOT NULL,
+    parent_id VARCHAR(64) NOT NULL,
+    parent_name VARCHAR(255) NOT NULL,
+    parent_phone VARCHAR(64) NOT NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'CONFIRMED', -- 'PENDING', 'CONFIRMED', 'CANCELLED'
+    payment_reference VARCHAR(128),
+    enrolled_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 22. Tabel Log Tugas & Pengerjaan Siswa (Homework Logs)
+CREATE TABLE IF NOT EXISTS edutech_homework_logs (
+    id VARCHAR(64) PRIMARY KEY,
+    enrollment_id VARCHAR(64) NOT NULL REFERENCES edutech_enrollments(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    score INT DEFAULT 0,
+    teacher_feedback TEXT,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 23. Tabel Ringkasan Evaluasi Mingguan Buatan AI (AI Weekly Summaries)
+CREATE TABLE IF NOT EXISTS edutech_weekly_summaries (
+    id VARCHAR(64) PRIMARY KEY,
+    student_id VARCHAR(64) NOT NULL,
+    week_number INT NOT NULL,
+    ai_generated_summary TEXT NOT NULL,
+    raw_teacher_notes TEXT,
+    concepts_mastered JSONB NOT NULL DEFAULT '[]'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indeks Kinerja EdTech
+CREATE INDEX IF NOT EXISTS idx_edutech_programs_tenant ON edutech_programs(tenant_id, is_active);
+CREATE INDEX IF NOT EXISTS idx_edutech_classes_prog ON edutech_classes(program_id, status);
+CREATE INDEX IF NOT EXISTS idx_edutech_enrollments_parent ON edutech_enrollments(parent_id, class_id);
+CREATE INDEX IF NOT EXISTS idx_edutech_homework_enroll ON edutech_homework_logs(enrollment_id);
+CREATE INDEX IF NOT EXISTS idx_edutech_summary_student ON edutech_weekly_summaries(student_id, week_number);
+
+
