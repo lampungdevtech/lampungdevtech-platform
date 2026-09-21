@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { Program, ClassSession, MemberProfile } from './types';
+import { Program, ClassSession, MemberProfile, Enrollment } from './types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,12 +10,23 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Sparkles, Calendar, Clock, UserCheck, Flame, CheckCircle, AlertTriangle, BookOpen } from 'lucide-react';
+import { PaymentMethodSelector } from '@/components/payment/payment-method-selector';
+import { PaymentInstructionModal } from '@/components/payment/payment-instruction-modal';
+import type { PaymentMethodItem, PaymentResult } from '@/lib/payment/types';
+import { getWeselAjaMerchantFee } from '@/lib/payment/weselaja';
 
 interface Props {
   programs: Program[];
   classes: ClassSession[];
   member: MemberProfile | null;
-  onEnroll: (classId: string, studentName: string, parentName: string, parentPhone: string) => Promise<{ success: boolean; message: string }>;
+  onEnroll: (
+    classId: string, 
+    studentName: string, 
+    parentName: string, 
+    parentPhone: string,
+    paymentMethod?: string,
+    paymentFee?: number
+  ) => Promise<{ success: boolean; message: string; enrollment?: Enrollment }>;
 }
 
 export function EdutechProgramCatalog({ programs, classes, member, onEnroll }: Props) {
@@ -30,6 +41,12 @@ export function EdutechProgramCatalog({ programs, classes, member, onEnroll }: P
   const [parentPhone, setParentPhone] = useState(member?.phone || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // WeselAja Payment Selection State
+  const [selectedMethod, setSelectedMethod] = useState<string>('QRIS');
+  const [selectedMethodItem, setSelectedMethodItem] = useState<PaymentMethodItem | null>(null);
+  const [paymentResult, setPaymentResult] = useState<PaymentResult | null>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const categories = [
     { id: 'ALL', label: t('catAll') },
@@ -48,6 +65,8 @@ export function EdutechProgramCatalog({ programs, classes, member, onEnroll }: P
     setStudentName(member?.childName || '');
     setParentName(member?.name || '');
     setParentPhone(member?.phone || '');
+    setSelectedMethod('QRIS');
+    setSelectedMethodItem(null);
     setNotification(null);
   };
 
@@ -58,22 +77,55 @@ export function EdutechProgramCatalog({ programs, classes, member, onEnroll }: P
     setIsSubmitting(true);
     const defaultStudent = isEn ? 'Student' : 'Ananda Murid';
     const defaultParent = isEn ? 'Parent' : 'Orang Tua';
-    const res = await onEnroll(
-      activeBookingClass.id, 
-      studentName || defaultStudent, 
-      parentName || defaultParent, 
-      parentPhone || '0812-0000-0000'
-    );
-    setIsSubmitting(false);
 
-    if (res.success) {
-      setNotification({ type: 'success', message: res.message });
-      setTimeout(() => {
+    const rawPrice = activeBookingClass.price;
+    const fee = selectedMethodItem?.totalFee || getWeselAjaMerchantFee(selectedMethod, rawPrice);
+
+    try {
+      // 1. Request payment from WeselAja API
+      const payRes = await fetch('/api/payment/weselaja/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: 'EDT-' + Date.now().toString().slice(-6),
+          amount: rawPrice,
+          customerName: studentName || defaultStudent,
+          customerEmail: member?.email || 'parent@lampungdevtech.my.id',
+          customerPhone: parentPhone || '0812-0000-0000',
+          itemName: `${activeBookingClass.programTitle} - ${activeBookingClass.scheduleTime}`,
+          paymentMethod: selectedMethod,
+        }),
+      });
+
+      const payData: PaymentResult = await payRes.json();
+
+      // 2. Perform optimistic and atomic enrollment in store & backend
+      const res = await onEnroll(
+        activeBookingClass.id, 
+        studentName || defaultStudent, 
+        parentName || defaultParent, 
+        parentPhone || '0812-0000-0000',
+        selectedMethod,
+        fee
+      );
+
+      setIsSubmitting(false);
+
+      if (res.success) {
         setActiveBookingClass(null);
-        setNotification(null);
-      }, 1500);
-    } else {
-      setNotification({ type: 'error', message: res.message });
+        setPaymentResult({
+          ...payData,
+          totalAmount: rawPrice + fee,
+          feeAmount: fee,
+          paymentMethod: selectedMethod,
+        });
+        setIsPaymentModalOpen(true);
+      } else {
+        setNotification({ type: 'error', message: res.message });
+      }
+    } catch {
+      setIsSubmitting(false);
+      setNotification({ type: 'error', message: 'Gagal memproses pembayaran. Silakan coba lagi.' });
     }
   };
 
@@ -291,6 +343,46 @@ export function EdutechProgramCatalog({ programs, classes, member, onEnroll }: P
                 </div>
               </div>
 
+              {/* WeselAja Payment Method Selector */}
+              <div className="pt-1">
+                <PaymentMethodSelector
+                  amount={activeBookingClass.price}
+                  selectedMethod={selectedMethod}
+                  onSelectMethod={(item) => {
+                    setSelectedMethod(item.code);
+                    setSelectedMethodItem(item);
+                  }}
+                  isEn={isEn}
+                />
+              </div>
+
+              {/* Price Breakdown */}
+              {(() => {
+                const fee = selectedMethodItem?.totalFee ?? getWeselAjaMerchantFee(selectedMethod, activeBookingClass.price);
+                const grandTotal = activeBookingClass.price + fee;
+
+                return (
+                  <div className="p-3 rounded-xl bg-card border border-border/80 space-y-1.5 text-xs">
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>{isEn ? 'Program Tuition' : 'Biaya Belajar (Bimbel)'}</span>
+                      <span>Rp {activeBookingClass.price.toLocaleString(isEn ? 'en-US' : 'id-ID')}</span>
+                    </div>
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>{isEn ? 'Gateway Fee (WeselAja)' : 'Biaya Layanan (WeselAja)'}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                        +{fee > 0 ? `Rp ${fee.toLocaleString('id-ID')}` : (isEn ? 'Free' : 'Gratis')}
+                      </span>
+                    </div>
+                    <div className="flex justify-between font-bold text-foreground pt-1.5 border-t border-border/60 text-sm">
+                      <span>{isEn ? 'Total Payment' : 'Total Pembayaran'}</span>
+                      <span className="text-primary font-extrabold">
+                        Rp {grandTotal.toLocaleString(isEn ? 'en-US' : 'id-ID')}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {notification && (
                 <div className={`p-2.5 rounded-lg text-xs flex items-center gap-2 ${
                   notification.type === 'success'
@@ -318,13 +410,22 @@ export function EdutechProgramCatalog({ programs, classes, member, onEnroll }: P
                   disabled={isSubmitting || !studentName || !parentName || !parentPhone}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                 >
-                  {isSubmitting ? t('modalSecuring') : t('modalBtnConfirm')}
+                  {isSubmitting ? t('modalSecuring') : (isEn ? 'Confirm & Pay' : 'Daftar & Bayar Sekarang')}
                 </Button>
               </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
       )}
+
+      {/* WeselAja Payment Instruction / Settlement Modal */}
+      <PaymentInstructionModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        paymentResult={paymentResult}
+        orderTitle={isEn ? 'EdTech Class Tuition' : 'Biaya Pendaftaran Kelas'}
+        isEn={isEn}
+      />
     </div>
   );
 }

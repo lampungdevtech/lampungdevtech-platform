@@ -15,6 +15,10 @@ export async function POST(req: Request) {
       buyerNotes,
       productId,
       paymentChannel,
+      paymentFee,
+      paymentCode,
+      paymentUrl,
+      transactionReference,
     } = body;
 
     if (!storeId || !buyerName || !buyerWhatsapp || !productId) {
@@ -35,6 +39,10 @@ export async function POST(req: Request) {
       buyerNotes,
       productId,
       paymentChannel: paymentChannel || 'WHATSAPP_DIRECT',
+      paymentFee,
+      paymentCode,
+      paymentUrl,
+      transactionReference,
     });
 
     let whatsappRedirectUrl: string | undefined = undefined;

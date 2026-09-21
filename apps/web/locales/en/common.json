@@ -62,7 +62,7 @@
   },
   "footer": {
     "description": "Tech developer community in Lampung to share knowledge, experience, and opportunities.",
-    "rights": "© 2025 LampungDevTech. All rights reserved.",
+    "rights": "© {year} LampungDevTech. All rights reserved.",
     "community": "Community",
     "resources": "Resources",
     "legal": "Legal",
@@ -85,12 +85,61 @@
   },
   "about": {
     "heroTitle": "About LampungDevTech",
-    "heroSubtitle": "Building a strong tech ecosystem in Lampung through collaboration and continuous learning.",
-    "historyTitle": "Our History",
-    "teamTitle": "Our Team",
-    "teamSubtitle": "Meet the people behind LampungDevTech",
+    "heroSubtitle": "Building a resilient and forward-looking technology ecosystem in Lampung through collaboration and continuous learning.",
+    "historyTitle": "Our Story & Journey",
+    "storyParagraph1": "LampungDevTech was established in 2023 by a collective of passionate developers dedicated to accelerating the technology landscape across Lampung. Originating from informal coffee shop conversations, this initiative rapidly evolved into a vibrant nexus for collaboration and peer learning among regional software builders.",
+    "storyParagraph2": "We firmly believe Lampung holds immense potential to rise as one of Indonesia's premier digital innovation hubs. By cultivating an inclusive, welcoming community, our goal is to empower homegrown tech talent and stimulate regional economic prosperity through technology.",
+    "pillars": {
+      "inclusiveTitle": "Inclusive Community",
+      "inclusiveDesc": "Open to developers of all backgrounds, from enthusiastic newcomers to industry experts.",
+      "sharingTitle": "Knowledge Sharing",
+      "sharingDesc": "Championing a generous culture of mentorship, code sharing, and continuous growth.",
+      "qualityTitle": "Focus on Excellence",
+      "qualityDesc": "Committed to world-class standards and practical relevance in every program we deliver."
+    },
+    "visionTitle": "Vision of Lampung Developer Community",
+    "visionSubtitle": "Our long-term aspirations and compass in establishing Lampung as a globally competitive digital innovation powerhouse.",
+    "visionList": [
+      {
+        "title": "To become the foremost technology community in Lampung, driving innovation, collaboration, and digital ecosystem growth.",
+        "desc": "Lampung Developer aspires to be the most advanced and influential tech community in Lampung. We serve as a launchpad for fresh ideas, collaborative ventures among tech creators, and an engine for regional digital transformation."
+      },
+      {
+        "title": "To create an inclusive learning environment for everyone, from beginners to seasoned professionals, in the world of technology development.",
+        "desc": "Lampung Developer fosters a transparent, open learning space accessible to anyone eager to learn technology. Everyone has the equal right and opportunity to grow together in this supportive community."
+      },
+      {
+        "title": "To connect local developers with global opportunities through education, networking, and cutting-edge technological support.",
+        "desc": "Lampung Developer bridges regional software builders with international industry opportunities through world-class workshops, global tech networking, and modern architectural standards."
+      },
+      {
+        "title": "To inspire the young generation of Lampung to take part in the global technological revolution.",
+        "desc": "Lampung Developer motivates young minds across Lampung to actively shape the future of tech, broadening their perspectives on digital career pathways and entrepreneurship."
+      },
+      {
+        "title": "To solidify Lampung's standing as a vibrant hub of creative and innovative technology development in Indonesia.",
+        "desc": "Lampung Developer envisions Lampung celebrated nationwide as an epicenter of creative tech breakthroughs. Together, let us materialize this vision to establish Lampung as Indonesia's prime creative technology hub."
+      }
+    ],
+    "missionTitle": "Mission of Lampung Developer Community",
+    "missionSubtitle": "Concrete roadmap and everyday initiatives executed in tandem with our members and ecosystem partners.",
+    "missionList": [
+      "Conducting regular training programs and free technical workshops to elevate engineering proficiencies.",
+      "Organizing annual hackathons and coding tournaments to stimulate software engineering creativity and breakthroughs.",
+      "Building strategic alliances with companies, startups, and universities to solidify the local tech ecosystem.",
+      "Facilitating structured mentorship between senior leaders and junior developers to accelerate career growth.",
+      "Developing our community digital platform as a single source of truth, open knowledge base, and project hub.",
+      "Elevating regional awareness regarding technology adoption across diverse industries through public tech talks.",
+      "Creating collaborative co-working and meetup spaces that nurture experimentation and teamwork.",
+      "Strengthening bridges with developer communities nationwide to broaden mutual horizons.",
+      "Accelerating local tech startups through incubation frameworks and hands-on architectural advisory.",
+      "Partnering with local municipal governments to advance civic technology and streamline citizen public services."
+    ],
+    "missionManifesto": "As a community, we believe that collaboration, education, and innovation are the cornerstones for shaping a brighter digital future in Lampung. In the spirit of unity and mutual support, we will continuously evolve and contribute to collective progress. Through this mission, we do not merely build software; we architect a more prosperous future for society. Let us keep advancing forward, synergizing our capabilities, and leading positive transformation in Lampung.",
+    "teamTitle": "Our Co-Founders & Team",
+    "teamSubtitle": "Meet the pioneers and leaders steering LampungDevTech forward",
     "joinTitle": "Join the Community",
-    "joinSubtitle": "Be part of the movement building a stronger and sustainable tech ecosystem in Lampung!",
+    "joinSubtitle": "Become part of the movement engineering a more vibrant, sustainable tech ecosystem in Lampung!",
     "joinButton": "Join Now"
   },
   "events": {

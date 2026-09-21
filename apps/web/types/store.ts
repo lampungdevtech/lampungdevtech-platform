@@ -10,7 +10,7 @@ export type StoreCategory =
   | 'FOOD_BEVERAGE'
   | 'OTHER';
 
-export type OrderPaymentChannel = 'WHATSAPP_DIRECT' | 'QRIS' | 'VIRTUAL_ACCOUNT';
+export type OrderPaymentChannel = 'WHATSAPP_DIRECT' | 'QRIS' | 'VIRTUAL_ACCOUNT' | 'EWALLET' | string;
 
 export type OrderPaymentStatus = 'PENDING' | 'PAID' | 'FAILED' | 'CANCELLED';
 
@@ -113,6 +113,7 @@ export interface StoreOrder {
     subtotal: number;
     shippingCost: number; // 0 for digital
     discountAmount: number;
+    feeAmount?: number;
     grandTotal: number;
   };
   payment: {
@@ -120,6 +121,8 @@ export interface StoreOrder {
     status: OrderPaymentStatus;
     paidAt?: Date | string;
     transactionReference?: string;
+    paymentCode?: string;
+    paymentUrl?: string;
   };
   fulfillment: {
     status: OrderFulfillmentStatus;

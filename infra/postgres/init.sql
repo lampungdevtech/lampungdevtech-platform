@@ -335,6 +335,9 @@ CREATE TABLE IF NOT EXISTS edutech_enrollments (
     parent_phone VARCHAR(64) NOT NULL,
     status VARCHAR(32) NOT NULL DEFAULT 'CONFIRMED', -- 'PENDING', 'CONFIRMED', 'CANCELLED'
     payment_reference VARCHAR(128),
+    payment_method VARCHAR(64), -- 'QRIS', 'INTERBANK_BCA.VA', 'MDR.VA', 'DANA', etc.
+    payment_fee NUMERIC(12, 2) DEFAULT 0,
+    payment_url VARCHAR(255),
     enrolled_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
