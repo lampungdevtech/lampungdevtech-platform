@@ -5,6 +5,7 @@ import {
   StoreProduct,
   StoreOrder,
   StoreApplyRequest,
+  OrderPaymentChannel,
 } from '@/types/store';
 
 const COLLECTION_STORES = 'stores';
@@ -351,11 +352,16 @@ export async function createOrder(data: {
   buyerEmail?: string;
   buyerNotes?: string;
   productId: string;
-  paymentChannel: 'WHATSAPP_DIRECT' | 'QRIS';
+  paymentChannel: OrderPaymentChannel;
+  paymentFee?: number;
+  paymentCode?: string;
+  paymentUrl?: string;
+  transactionReference?: string;
 }): Promise<StoreOrder> {
   const product = await getProductBySlug(data.storeId, data.productId) || mockProducts.find((p) => p.id === data.productId || p.slug === data.productId);
 
   const price = product?.discountPrice ?? product?.price ?? 50000;
+  const feeAmount = data.paymentFee || 0;
   const id = `ord-${ulid()}`;
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const orderNumber = `ORD-WIN-${dateStr}-${id.slice(-4).toUpperCase()}`;
@@ -387,11 +393,15 @@ export async function createOrder(data: {
       subtotal: price,
       shippingCost: 0,
       discountAmount: 0,
-      grandTotal: price,
+      feeAmount,
+      grandTotal: price + feeAmount,
     },
     payment: {
       channel: data.paymentChannel,
       status: 'PENDING',
+      paymentCode: data.paymentCode,
+      paymentUrl: data.paymentUrl,
+      transactionReference: data.transactionReference,
     },
     fulfillment: {
       status: 'WAITING_PAYMENT',

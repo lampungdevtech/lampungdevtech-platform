@@ -16,9 +16,12 @@ import {
   Send,
   Loader2,
   Sparkles,
-  QrCode,
+  CreditCard,
 } from 'lucide-react';
 import Link from 'next/link';
+import { PaymentMethodSelector } from '@/components/payment/payment-method-selector';
+import { PaymentInstructionModal } from '@/components/payment/payment-instruction-modal';
+import type { PaymentMethodItem, PaymentResult } from '@/lib/payment/types';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -38,8 +41,13 @@ export default function ProductDetailPage() {
   const [buyerWhatsapp, setBuyerWhatsapp] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
   const [buyerNotes, setBuyerNotes] = useState('');
-  const [paymentChannel, setPaymentChannel] = useState<'WHATSAPP_DIRECT' | 'QRIS'>('WHATSAPP_DIRECT');
+  const [paymentChannel, setPaymentChannel] = useState<'WHATSAPP_DIRECT' | 'GATEWAY'>('WHATSAPP_DIRECT');
+  const [selectedGatewayMethod, setSelectedGatewayMethod] = useState<string>('QRIS');
+  const [selectedGatewayItem, setSelectedGatewayItem] = useState<PaymentMethodItem | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [weselResult, setWeselResult] = useState<PaymentResult | null>(null);
+  const [isInstructionOpen, setIsInstructionOpen] = useState(false);
+  const [completedOrderId, setCompletedOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     // For demo instant reliability: fetch products from store
@@ -74,6 +82,10 @@ export default function ProductDetailPage() {
       maximumFractionDigits: 0,
     }).format(val);
 
+  const finalPrice = product ? (product.discountPrice || product.price) : 0;
+  const gatewayFee = paymentChannel === 'GATEWAY' && selectedGatewayItem ? (selectedGatewayItem.fee ?? selectedGatewayItem.totalFee ?? 0) : 0;
+  const totalAmount = finalPrice + gatewayFee;
+
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -89,35 +101,91 @@ export default function ProductDetailPage() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch('/api/store/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          storeId: store?.id || 'store-demo-01',
-          storeSlug,
-          storeName: store?.name || 'Lampung Digital Creative',
-          storeWhatsapp: store?.whatsappNumber || '6281234567890',
-          buyerName,
-          buyerWhatsapp,
-          buyerEmail,
-          buyerNotes,
-          productId: product?.id,
-          paymentChannel,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Gagal memproses pesanan.');
-
-      if (paymentChannel === 'WHATSAPP_DIRECT' && data.whatsappRedirectUrl) {
-        toast({
-          title: 'Membuka WhatsApp Penjual...',
-          description: 'Pesanan Anda telah disiapkan. Mengalihkan ke WhatsApp.',
+      if (paymentChannel === 'WHATSAPP_DIRECT') {
+        const res = await fetch('/api/store/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            storeId: store?.id || 'store-demo-01',
+            storeSlug,
+            storeName: store?.name || 'Lampung Digital Creative',
+            storeWhatsapp: store?.whatsappNumber || '6281234567890',
+            buyerName,
+            buyerWhatsapp,
+            buyerEmail,
+            buyerNotes,
+            productId: product?.id,
+            paymentChannel: 'WHATSAPP_DIRECT',
+          }),
         });
-        window.open(data.whatsappRedirectUrl, '_blank');
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Gagal memproses pesanan.');
+
+        if (data.whatsappRedirectUrl) {
+          toast({
+            title: 'Membuka WhatsApp Penjual...',
+            description: 'Pesanan Anda telah disiapkan. Mengalihkan ke WhatsApp.',
+          });
+          window.open(data.whatsappRedirectUrl, '_blank');
+        }
         router.push(`/${locale}/store/${storeSlug}/order/${data.order.id}`);
       } else {
-        router.push(`/${locale}/store/${storeSlug}/order/${data.order.id}`);
+        // Direct Gateway Payment via WeselAja (XenithPay Open API)
+        const gatewayRes = await fetch('/api/payment/weselaja/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: finalPrice,
+            paymentMethod: selectedGatewayMethod || 'QRIS',
+            customerName: buyerName,
+            customerEmail: buyerEmail || undefined,
+            customerPhone: buyerWhatsapp,
+            description: `Beli ${product?.name} - ${store?.name || 'Toko Mitra'}`,
+            metadata: {
+              storeSlug,
+              productId: product?.id,
+            },
+          }),
+        });
+
+        const gatewayData = await gatewayRes.json();
+        if (!gatewayRes.ok || !gatewayData.success) {
+          throw new Error(gatewayData.error || 'Gagal membuat tagihan pembayaran');
+        }
+
+        const payResult: PaymentResult = gatewayData.payment;
+
+        // Persist order in store DB with WeselAja transaction reference
+        const resOrder = await fetch('/api/store/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            storeId: store?.id || 'store-demo-01',
+            storeSlug,
+            storeName: store?.name || 'Lampung Digital Creative',
+            storeWhatsapp: store?.whatsappNumber || '6281234567890',
+            buyerName,
+            buyerWhatsapp,
+            buyerEmail,
+            buyerNotes,
+            productId: product?.id,
+            paymentChannel: selectedGatewayMethod,
+            paymentFee: payResult.fee ?? payResult.feeAmount ?? 0,
+            paymentCode: payResult.paymentCode,
+            paymentUrl: payResult.paymentUrl,
+            transactionReference: payResult.transactionReference ?? payResult.paymentReference,
+          }),
+        });
+
+        const orderData = await resOrder.json();
+        const orderId = orderData?.order?.id;
+        if (orderId) {
+          setCompletedOrderId(orderId);
+        }
+
+        setWeselResult(payResult);
+        setIsInstructionOpen(true);
       }
     } catch (err: any) {
       toast({
@@ -137,8 +205,6 @@ export default function ProductDetailPage() {
       </div>
     );
   }
-
-  const finalPrice = product.discountPrice || product.price;
 
   return (
     <div className="min-h-screen py-8 md:py-12 bg-muted/10">
@@ -223,12 +289,23 @@ export default function ProductDetailPage() {
           <div className="md:col-span-5">
             <Card className="border-2 border-primary/30 shadow-xl bg-card sticky top-20">
               <CardContent className="p-6 space-y-5">
-                <div className="border-b pb-3">
+                <div className="border-b pb-3 space-y-1.5">
                   <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
                     Form Pemesanan Instan
                   </div>
-                  <div className="text-lg font-black text-foreground mt-0.5">
-                    Total: {formatRupiah(finalPrice)}
+                  <div className="flex items-baseline justify-between text-xs">
+                    <span className="text-muted-foreground">Harga Produk:</span>
+                    <span className="font-semibold text-foreground">{formatRupiah(finalPrice)}</span>
+                  </div>
+                  {paymentChannel === 'GATEWAY' && gatewayFee > 0 && (
+                    <div className="flex items-baseline justify-between text-xs text-muted-foreground">
+                      <span>Biaya Layanan ({selectedGatewayItem?.name || selectedGatewayMethod}):</span>
+                      <span className="font-semibold text-foreground">+{formatRupiah(gatewayFee)}</span>
+                    </div>
+                  )}
+                  <div className="flex items-baseline justify-between pt-1 border-t">
+                    <span className="text-xs font-bold text-foreground">Total Bayar:</span>
+                    <span className="text-xl font-black text-primary">{formatRupiah(totalAmount)}</span>
                   </div>
                 </div>
 
@@ -312,17 +389,17 @@ export default function ProductDetailPage() {
                         <div className="flex-1">
                           <div className="font-bold text-xs flex items-center">
                             <Send className="h-3.5 w-3.5 mr-1.5 text-emerald-500" />
-                            Pesan via WhatsApp (Favorit)
+                            Pesan via WhatsApp (Chat Langsung)
                           </div>
                           <div className="text-[11px] text-muted-foreground">
-                            Format pesan otomatis ke chat WhatsApp penjual.
+                            Format pesan otomatis ke chat WhatsApp penjual mitra.
                           </div>
                         </div>
                       </label>
 
                       <label
                         className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${
-                          paymentChannel === 'QRIS'
+                          paymentChannel === 'GATEWAY'
                             ? 'border-primary bg-primary/5 ring-1 ring-primary'
                             : 'border-muted bg-background/50'
                         }`}
@@ -330,21 +407,35 @@ export default function ProductDetailPage() {
                         <input
                           type="radio"
                           name="channel"
-                          checked={paymentChannel === 'QRIS'}
-                          onChange={() => setPaymentChannel('QRIS')}
+                          checked={paymentChannel === 'GATEWAY'}
+                          onChange={() => setPaymentChannel('GATEWAY')}
                           className="mr-3"
                         />
                         <div className="flex-1">
                           <div className="font-bold text-xs flex items-center">
-                            <QrCode className="h-3.5 w-3.5 mr-1.5 text-primary" />
-                            Bayar Otomatis (QRIS / VA)
+                            <CreditCard className="h-3.5 w-3.5 mr-1.5 text-primary" />
+                            Bayar Otomatis (WeselAja Gateway)
                           </div>
                           <div className="text-[11px] text-muted-foreground">
-                            Scan QRIS, akses file langsung terbuka seketika.
+                            QRIS, Virtual Account BCA/Mandiri/BNI/BRI, DANA, OVO.
                           </div>
                         </div>
                       </label>
                     </div>
+
+                    {paymentChannel === 'GATEWAY' && (
+                      <div className="pt-2">
+                        <PaymentMethodSelector
+                          amount={finalPrice}
+                          selectedMethod={selectedGatewayMethod}
+                          onSelectMethod={(item) => {
+                            setSelectedGatewayMethod(item.code);
+                            setSelectedGatewayItem(item);
+                          }}
+                          isEn={locale === 'en'}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <Button
@@ -365,15 +456,15 @@ export default function ProductDetailPage() {
                       </>
                     ) : (
                       <>
-                        Lanjut ke Pembayaran QRIS
-                        <QrCode className="h-4 w-4 ml-2" />
+                        Bayar Sekarang ({formatRupiah(totalAmount)})
+                        <CreditCard className="h-4 w-4 ml-2" />
                       </>
                     )}
                   </Button>
 
                   <div className="text-center text-[11px] text-muted-foreground flex items-center justify-center gap-1">
                     <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-                    <span>0% Biaya Tambahan · Bebas Ongkir</span>
+                    <span>Terverifikasi Aman · Akses Digital Instan</span>
                   </div>
                 </form>
               </CardContent>
@@ -381,6 +472,20 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* WeselAja Payment Instruction Modal */}
+      <PaymentInstructionModal
+        isOpen={isInstructionOpen}
+        onClose={() => {
+          setIsInstructionOpen(false);
+          if (completedOrderId) {
+            router.push(`/${locale}/store/${storeSlug}/order/${completedOrderId}`);
+          }
+        }}
+        paymentResult={weselResult}
+        orderTitle={`Pembelian ${product?.name || 'Produk Digital'}`}
+        isEn={locale === 'en'}
+      />
     </div>
   );
 }
