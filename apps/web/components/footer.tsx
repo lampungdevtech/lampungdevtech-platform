@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 const Footer = () => {
   const t = useTranslations('footer');
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-primary text-primary-foreground w-full">
@@ -109,7 +110,7 @@ const Footer = () => {
               </Button>
             </div>
             <p className="text-sm text-primary-foreground/80">
-              {t('rights')}
+              {t('rights', { year: currentYear })}
             </p>
           </div>
 
