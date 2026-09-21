@@ -51,6 +51,8 @@ export interface Enrollment {
   parentPhone: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
   paymentReference: string;
+  paymentMethod?: string;
+  paymentFee?: number;
   enrolledAt: string;
 }
 

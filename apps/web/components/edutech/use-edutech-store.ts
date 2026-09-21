@@ -521,7 +521,9 @@ export function useEdutechStore() {
     classId: string, 
     studentName: string, 
     parentName: string, 
-    parentPhone: string
+    parentPhone: string,
+    paymentMethod?: string,
+    paymentFee?: number
   ): Promise<{ success: boolean; message: string; enrollment?: Enrollment }> => {
     const targetClass = classes.find(c => c.id === classId);
     if (!targetClass) {
@@ -551,6 +553,8 @@ export function useEdutechStore() {
           parentName,
           parentPhone,
           parentId: member?.id || 'PAR-' + Date.now().toString().slice(-4),
+          paymentMethod: paymentMethod || 'QRIS',
+          paymentFee: paymentFee || 0,
         }),
       });
 
@@ -582,6 +586,8 @@ export function useEdutechStore() {
           parentPhone,
           status: 'CONFIRMED',
           paymentReference: 'INV/2026/09/EDT-' + Math.floor(100 + Math.random() * 900),
+          paymentMethod: paymentMethod || 'QRIS',
+          paymentFee: paymentFee || 0,
           enrolledAt: new Date().toISOString(),
         };
 
@@ -626,6 +632,8 @@ export function useEdutechStore() {
       parentPhone,
       status: 'CONFIRMED',
       paymentReference: 'INV/2026/09/EDT-' + Math.floor(100 + Math.random() * 900),
+      paymentMethod: paymentMethod || 'QRIS',
+      paymentFee: paymentFee || 0,
       enrolledAt: new Date().toISOString(),
     };
 
