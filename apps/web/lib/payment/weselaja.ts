@@ -175,8 +175,19 @@ export async function createWeselAjaPayment(params: CreatePaymentParams): Promis
   const fee = getWeselAjaMerchantFee(selectedMethod, rawAmount);
   const totalAmount = rawAmount + fee;
 
-  // Fallback Simulation Mode (Zero-crash if API key is not configured)
+  // Fallback Simulation Mode (Zero-crash if API key is not configured in development)
   if (!config.apiKey || !config.secretKey) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const allowSimulation = process.env.ALLOW_PAYMENT_SIMULATION === 'true';
+
+    if (isProduction && !allowSimulation) {
+      console.error('[WeselAja Security] Payment credentials are missing in production!');
+      return {
+        success: false,
+        error: 'Sistem pembayaran sedang dalam pemeliharaan konfigurasi. Silakan hubungi admin.',
+      };
+    }
+
     console.warn('[WeselAja] Credentials not configured. Running in Resilient Simulation Mode.');
     const mockRef = `WESEL-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
     const isVA = selectedMethod.includes('.VA');
@@ -287,6 +298,7 @@ export async function createWeselAjaPayment(params: CreatePaymentParams): Promis
 
 /**
  * Verify HMAC-SHA256 signature of incoming WeselAja / XenithPay webhook callbacks.
+ * Checks timestamp freshness to prevent replay attacks and performs timing-safe comparison.
  */
 export function verifyWeselAjaSignature(
   method: string,
@@ -297,16 +309,45 @@ export function verifyWeselAjaSignature(
 ): boolean {
   const config = getConfig();
   if (!config.webhookSecret) {
-    console.error('[WeselAja] WESELAJA_WEBHOOK_SECRET is not configured');
+    console.error('[WeselAja Security] WESELAJA_WEBHOOK_SECRET is not configured');
     return false;
   }
 
-  // Payload structure: {HTTP_METHOD}\n{URL_PATH}\n{REQUEST_BODY}\n{TIMESTAMP}
-  const payload = `${method}\\n${path}\\n${rawBody}\\n${timestamp}`;
-  const expectedSignature = crypto.createHmac('sha256', config.webhookSecret).update(payload).digest('base64');
+  if (!signature || !timestamp) {
+    return false;
+  }
+
+  // Replay Attack Protection: verify timestamp is within acceptable tolerance (5 minutes)
+  const webhookTime = new Date(timestamp).getTime();
+  if (isNaN(webhookTime)) {
+    console.warn('[WeselAja Security] Invalid timestamp format in webhook header');
+    return false;
+  }
+
+  const now = Date.now();
+  const maxDriftMs = 5 * 60 * 1000; // 5 minutes
+  if (Math.abs(now - webhookTime) > maxDriftMs) {
+    console.warn('[WeselAja Security] Webhook timestamp drift exceeded tolerance (potential replay attack)');
+    return false;
+  }
+
+  // XenithPay supports both literal '\n' and standard newline in different OpenAPI gateway specs:
+  // Format 1: {HTTP_METHOD}\n{URL_PATH}\n{REQUEST_BODY}\n{TIMESTAMP}
+  const payloadFormat1 = `${method}\\n${path}\\n${rawBody}\\n${timestamp}`;
+  const payloadFormat2 = `${method}\n${path}\n${rawBody}\n${timestamp}`;
+
+  const expectedSig1 = crypto.createHmac('sha256', config.webhookSecret).update(payloadFormat1).digest('base64');
+  const expectedSig2 = crypto.createHmac('sha256', config.webhookSecret).update(payloadFormat2).digest('base64');
 
   try {
-    return crypto.timingSafeEqual(Buffer.from(expectedSignature), Buffer.from(signature));
+    const bufActual = Buffer.from(signature, 'utf8');
+    const bufExpected1 = Buffer.from(expectedSig1, 'utf8');
+    const bufExpected2 = Buffer.from(expectedSig2, 'utf8');
+
+    const match1 = bufActual.length === bufExpected1.length && crypto.timingSafeEqual(bufActual, bufExpected1);
+    const match2 = bufActual.length === bufExpected2.length && crypto.timingSafeEqual(bufActual, bufExpected2);
+
+    return match1 || match2;
   } catch {
     return false;
   }

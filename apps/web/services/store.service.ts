@@ -428,21 +428,54 @@ export async function getOrderById(orderId: string): Promise<StoreOrder | null> 
   const db = await getDatabase();
   if (db) {
     try {
-      const order = await db.collection<StoreOrder>(COLLECTION_ORDERS).findOne({ id: orderId });
+      const order = await db.collection<StoreOrder>(COLLECTION_ORDERS).findOne({
+        $or: [
+          { id: orderId },
+          { orderNumber: orderId },
+          { 'payment.transactionReference': orderId },
+        ],
+      });
       if (order) return { ...order, id: order._id ? String(order._id) : order.id };
     } catch (e) {
       console.warn('[StoreService] MongoDB error getOrderById:', e);
     }
   }
-  return mockOrders.find((o) => o.id === orderId || o.orderNumber === orderId) || null;
+  return (
+    mockOrders.find(
+      (o) =>
+        o.id === orderId ||
+        o.orderNumber === orderId ||
+        o.payment?.transactionReference === orderId
+    ) || null
+  );
 }
 
-export async function markOrderPaid(orderId: string): Promise<StoreOrder | null> {
+export async function markOrderPaid(orderId: string, paidAmount?: number): Promise<StoreOrder | null> {
+  const existingOrder = await getOrderById(orderId);
+  if (!existingOrder) {
+    return null;
+  }
+
+  // Idempotency: if already paid, return early safely
+  if (existingOrder.payment.status === 'PAID') {
+    return existingOrder;
+  }
+
+  // Security guard against underpayment fraud:
+  if (paidAmount !== undefined && paidAmount < existingOrder.pricing.grandTotal) {
+    console.warn(
+      `[StoreService Security] Underpayment detected for order ${existingOrder.id}: expected ${existingOrder.pricing.grandTotal}, received ${paidAmount}`
+    );
+    return null;
+  }
+
+  const targetId = existingOrder.id;
+
   const db = await getDatabase();
   if (db) {
     try {
       await db.collection(COLLECTION_ORDERS).updateOne(
-        { id: orderId },
+        { id: targetId },
         {
           $set: {
             'payment.status': 'PAID',
@@ -459,7 +492,7 @@ export async function markOrderPaid(orderId: string): Promise<StoreOrder | null>
     }
   }
 
-  const order = mockOrders.find((o) => o.id === orderId);
+  const order = mockOrders.find((o) => o.id === targetId || o.id === orderId);
   if (order) {
     order.payment.status = 'PAID';
     order.payment.paidAt = new Date();
@@ -468,7 +501,13 @@ export async function markOrderPaid(orderId: string): Promise<StoreOrder | null>
     order.fulfillment.digitalDelivered = true;
     return order;
   }
-  return null;
+
+  existingOrder.payment.status = 'PAID';
+  existingOrder.payment.paidAt = new Date();
+  existingOrder.fulfillment.status = 'COMPLETED';
+  existingOrder.fulfillment.completedAt = new Date();
+  existingOrder.fulfillment.digitalDelivered = true;
+  return existingOrder;
 }
 
 export async function getOrdersByStore(storeId: string): Promise<StoreOrder[]> {
