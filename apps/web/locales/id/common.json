@@ -62,7 +62,7 @@
   },
   "footer": {
     "description": "Komunitas developer teknologi di Lampung untuk berbagi pengetahuan, pengalaman, dan kesempatan.",
-    "rights": "© 2025 LampungDevTech. All rights reserved.",
+    "rights": "© {year} LampungDevTech. All rights reserved.",
     "community": "Komunitas",
     "resources": "Sumber Daya",
     "legal": "Legal",
@@ -87,8 +87,57 @@
     "heroTitle": "Tentang LampungDevTech",
     "heroSubtitle": "Membangun ekosistem teknologi yang kuat di Lampung melalui kolaborasi dan pembelajaran berkelanjutan.",
     "historyTitle": "Sejarah Kami",
-    "teamTitle": "Tim Kami",
-    "teamSubtitle": "Kenali orang-orang di balik LampungDevTech",
+    "storyParagraph1": "LampungDevTech didirikan pada tahun 2023 oleh sekelompok developer yang memiliki visi untuk memajukan ekosistem teknologi di Lampung. Berawal dari meetup informal di kedai kopi, komunitas ini tumbuh menjadi wadah kolaborasi dan pembelajaran bagi para pengembang software di Lampung.",
+    "storyParagraph2": "Kami percaya bahwa Lampung memiliki potensi besar untuk menjadi salah satu pusat teknologi di Indonesia. Dengan membangun komunitas yang kuat dan inklusif, kami berharap dapat membantu mengembangkan talenta-talenta digital lokal dan mendorong pertumbuhan industri teknologi di Lampung.",
+    "pillars": {
+      "inclusiveTitle": "Komunitas Inklusif",
+      "inclusiveDesc": "Terbuka untuk semua level pengembang, dari pemula hingga expert.",
+      "sharingTitle": "Berbagi Pengetahuan",
+      "sharingDesc": "Mendorong budaya berbagi dan pembelajaran berkelanjutan.",
+      "qualityTitle": "Fokus pada Kualitas",
+      "qualityDesc": "Mengutamakan kualitas dalam setiap program dan kegiatan."
+    },
+    "visionTitle": "Visi Komunitas Lampung Developer",
+    "visionSubtitle": "Arah pandang dan cita-cita jangka panjang dalam mewujudkan ekosistem digital Lampung yang berdaya saing global.",
+    "visionList": [
+      {
+        "title": "Menjadi komunitas teknologi terdepan di Lampung yang mendorong inovasi, kolaborasi, dan pertumbuhan ekosistem digital.",
+        "desc": "Lampung Developer ingin menjadi komunitas teknologi yang paling maju dan berpengaruh di Lampung. Komunitas ini berperan sebagai tempat berkembangnya ide-ide baru, kerjasama antar penggiat teknologi, serta mendukung perkembangan dunia digital di daerah."
+      },
+      {
+        "title": "Menciptakan lingkungan pembelajaran yang inklusif bagi semua kalangan, baik pemula maupun profesional, dalam dunia pengembangan teknologi.",
+        "desc": "Lampung Developer akan membangun suasana belajar yang terbuka untuk semua orang, mulai dari yang baru belajar teknologi hingga yang sudah ahli. Semua orang bisa belajar dan berkembang bersama di komunitas ini."
+      },
+      {
+        "title": "Menghubungkan developer lokal dengan peluang global melalui edukasi, networking, dan dukungan teknologi mutakhir.",
+        "desc": "Lampung Developer berusaha membantu para pengembang teknologi (developer) di Lampung agar bisa terhubung dengan kesempatan-kesempatan di luar negeri. Caranya melalui kegiatan belajar, bertemu dengan orang-orang baru, dan menggunakan teknologi terbaru."
+      },
+      {
+        "title": "Menginspirasi generasi muda Lampung untuk menjadi bagian dari revolusi teknologi global.",
+        "desc": "Lampung Developer ingin memotivasi anak-anak muda di Lampung untuk ikut serta dalam perubahan besar di bidang teknologi dunia. Lampung Developer berperan dalam membuka mata generasi muda tentang pentingnya teknologi di masa depan."
+      },
+      {
+        "title": "Memperkuat posisi Lampung sebagai pusat pengembangan teknologi kreatif dan inovatif di Indonesia.",
+        "desc": "Lampung Developer bercita-cita untuk menjadikan Lampung sebagai salah satu daerah unggulan di Indonesia dalam hal teknologi. Komunitas ini ingin membuat Lampung dikenal sebagai tempat di mana kreativitas dan inovasi teknologi tumbuh dan berkembang. Mari wujudkan visi ini bersama untuk menjadikan Lampung pusat pengembangan teknologi kreatif di Indonesia."
+      }
+    ],
+    "missionTitle": "Misi Komunitas Lampung Developer",
+    "missionSubtitle": "Langkah nyata dan komitmen operasional yang kami jalankan bersama anggota dan mitra ekosistem.",
+    "missionList": [
+      "Menyelenggarakan pelatihan rutin dan workshop gratis untuk meningkatkan keterampilan teknis para anggota komunitas.",
+      "Mengadakan hackathon dan kompetisi coding tahunan untuk mendorong kreativitas dan inovasi di bidang pengembangan perangkat lunak.",
+      "Membangun kolaborasi dengan perusahaan, startup, dan institusi pendidikan untuk menciptakan ekosistem teknologi yang solid di Lampung.",
+      "Memfasilitasi program mentorship antara developer senior dan junior untuk mempercepat pengembangan kemampuan individu.",
+      "Mengembangkan platform digital komunitas sebagai pusat informasi, berbagi pengetahuan, dan proyek kolaboratif.",
+      "Meningkatkan kesadaran masyarakat Lampung tentang pentingnya teknologi dalam berbagai sektor melalui seminar dan acara publik.",
+      "Menciptakan ruang kerja bersama (co-working space) yang mendukung kegiatan kolaborasi antar anggota komunitas.",
+      "Membangun jaringan dengan komunitas teknologi lainnya di Indonesia untuk memperluas wawasan dan memperkuat koneksi.",
+      "Mendukung startup lokal melalui program inkubasi dan bimbingan teknologi.",
+      "Bekerja sama dengan pemerintah daerah untuk mempercepat penggunaan teknologi di Lampung dan mempermudah layanan masyarakat."
+    ],
+    "missionManifesto": "Sebagai komunitas, kita percaya bahwa kolaborasi, pendidikan, dan inovasi adalah kunci untuk membangun masa depan teknologi yang lebih baik di Lampung. Dengan semangat kebersamaan dan dukungan satu sama lain, kita akan terus berkembang dan berkontribusi untuk kemajuan bersama. Melalui misi ini, kita tidak hanya membangun teknologi, tetapi juga membangun masa depan yang lebih cerah bagi masyarakat. Mari kita terus bergerak maju, bersinergi, dan menjadi bagian dari perubahan positif di Lampung.",
+    "teamTitle": "Tim & Co-Founder Kami",
+    "teamSubtitle": "Kenali para perintis dan penggerak di balik LampungDevTech",
     "joinTitle": "Bergabung dengan Komunitas",
     "joinSubtitle": "Ayo jadi bagian dari gerakan membangun ekosistem teknologi yang lebih kuat dan berkelanjutan di Lampung!",
     "joinButton": "Bergabung Sekarang"
