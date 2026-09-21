@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Link } from '@/i18n/routing';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -18,10 +18,8 @@ import {
   Github,
   Twitter,
   ArrowLeft,
-  Sparkles,
   RefreshCw,
   Image as ImageIcon,
-  ExternalLink,
 } from 'lucide-react';
 import {
   Dialog,

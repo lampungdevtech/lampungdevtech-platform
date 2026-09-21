@@ -458,25 +458,35 @@ export function getInitialDemoDataset() {
         whatsapp: '081277112233',
         email: 'dimas.w@gmail.com',
       },
-      product: {
-        id: 'PROD-DEMO-01',
-        name: 'Bundle 50+ Template Canva Promosi UMKM Lampung',
-        type: 'DIGITAL',
-        price: 49000,
+      items: [
+        {
+          productId: 'PROD-DEMO-01',
+          productName: 'Bundle 50+ Template Canva Promosi UMKM Lampung',
+          productType: 'DIGITAL',
+          price: 49000,
+          quantity: 1,
+          digitalDetails: {
+            deliveryMethod: 'ACCESS_LINK',
+            accessLink: 'https://canva.com/design/sample-template-lampungdev',
+          },
+        },
+      ],
+      pricing: {
+        subtotal: 49000,
+        shippingCost: 0,
+        discountAmount: 0,
+        grandTotal: 49000,
       },
-      quantity: 1,
-      totalAmount: 49000,
-      paymentMethod: 'QRIS',
-      paymentStatus: 'PAID',
-      fulfillmentStatus: 'COMPLETED',
-      digitalDelivery: {
-        deliveredAt: new Date(Date.now() - 3600000),
-        accessLinkOrFile: 'https://canva.com/design/sample-template-lampungdev',
-      },
-      paymentGateway: {
-        provider: 'weselaja',
-        transactionId: 'TRX-WESEL-DEMO-991',
+      payment: {
+        channel: 'QRIS',
+        status: 'PAID',
         paidAt: new Date(Date.now() - 3600000),
+        transactionReference: 'TRX-WESEL-DEMO-991',
+      },
+      fulfillment: {
+        status: 'COMPLETED',
+        completedAt: new Date(Date.now() - 3600000),
+        digitalDelivered: true,
       },
       createdAt: new Date(Date.now() - 3600000),
       updatedAt: new Date(Date.now() - 3600000),

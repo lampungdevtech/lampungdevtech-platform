@@ -15,7 +15,6 @@ import {
   DollarSign,
   Trash2,
   Sparkles,
-  RefreshCw,
   LayoutDashboard,
 } from 'lucide-react';
 import {
