@@ -1,10 +1,34 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Link } from '@/i18n/routing';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { ShieldCheck, CheckCircle, XCircle, Clock, Store, MapPin, DollarSign } from 'lucide-react';
+import {
+  ShieldCheck,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Store,
+  MapPin,
+  DollarSign,
+  Trash2,
+  Sparkles,
+  RefreshCw,
+  LayoutDashboard,
+} from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface Application {
   id: string;
@@ -26,6 +50,7 @@ export default function AdminMitraPage() {
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [isDemoActionLoading, setIsDemoActionLoading] = useState(false);
 
   const fetchApplications = async () => {
     try {
@@ -44,6 +69,60 @@ export default function AdminMitraPage() {
   useEffect(() => {
     fetchApplications();
   }, []);
+
+  const handleCleanDemoData = async () => {
+    setIsDemoActionLoading(true);
+    try {
+      const res = await fetch('/api/admin/demo-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'clean' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal membersihkan data demo');
+
+      toast({
+        title: 'Data Demo Berhasil Dibersihkan!',
+        description: data.message || 'Semua koleksi pengujian telah dikosongkan.',
+      });
+      await fetchApplications();
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Gagal Membersihkan Data',
+        description: err.message,
+      });
+    } finally {
+      setIsDemoActionLoading(false);
+    }
+  };
+
+  const handleSeedDemoData = async () => {
+    setIsDemoActionLoading(true);
+    try {
+      const res = await fetch('/api/admin/demo-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'seed' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Gagal memasukkan data seeder');
+
+      toast({
+        title: 'Data Seeder Berhasil Dimuat!',
+        description: `${data.message} (${data.counts?.events ?? 0} Events, ${data.counts?.posApplications ?? 0} Mitra)`,
+      });
+      await fetchApplications();
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Gagal Memuat Seeder',
+        description: err.message,
+      });
+    } finally {
+      setIsDemoActionLoading(false);
+    }
+  };
 
   const handleUpdateStatus = async (id: string, newStatus: 'APPROVED' | 'REJECTED') => {
     setActionLoading(id);
@@ -85,12 +164,23 @@ export default function AdminMitraPage() {
     <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-6">
           <div className="flex items-center space-x-3">
             <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
               <ShieldCheck className="h-6 w-6" />
             </div>
             <div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/admin"
+                  className="text-xs text-primary font-medium hover:underline flex items-center gap-1 mb-0.5"
+                >
+                  <LayoutDashboard className="h-3 w-3" />
+                  Pusat Admin
+                </Link>
+                <span className="text-xs text-muted-foreground">•</span>
+                <span className="text-xs text-muted-foreground">Portal Mitra POS</span>
+              </div>
               <h1 className="text-3xl font-bold tracking-tight">Portal Super Admin: Pengajuan Mitra POS</h1>
               <p className="text-sm text-muted-foreground mt-0.5">
                 Tinjau dan berikan peran <strong>MITRA_POS</strong> kepada calon pebisnis kafe Lampung.
@@ -98,7 +188,58 @@ export default function AdminMitraPage() {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          {/* Action & Demo Buttons */}
+          <div className="flex flex-wrap items-center gap-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive transition-colors"
+                  disabled={isDemoActionLoading}
+                >
+                  <Trash2 className="h-4 w-4 mr-1.5" />
+                  {isDemoActionLoading ? 'Memproses...' : 'Bersihkan Data Demo'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Bersihkan Seluruh Data Demo?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tindakan ini akan mengosongkan seluruh data demo (Events yang selesai maupun mendatang, pendaftaran tiket, pengajuan mitra POS, serta toko online) dari database.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleCleanDemoData}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Ya, Bersihkan Data Demo
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleSeedDemoData}
+              disabled={isDemoActionLoading}
+              className="border shadow-xs"
+            >
+              <Sparkles className="h-4 w-4 mr-1.5 text-primary" />
+              Muat Data Seeder
+            </Button>
+          </div>
+        </div>
+
+        {/* Toolbar & Filter Bar */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-muted/30 p-3 rounded-lg border">
+          <div className="text-sm text-muted-foreground">
+            Filter Status Pengajuan:
+          </div>
+          <div className="flex flex-wrap gap-2">
             <Button
               variant={filter === 'ALL' ? 'default' : 'outline'}
               size="sm"
@@ -119,6 +260,13 @@ export default function AdminMitraPage() {
               onClick={() => setFilter('APPROVED')}
             >
               Disetujui
+            </Button>
+            <Button
+              variant={filter === 'REJECTED' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilter('REJECTED')}
+            >
+              Ditolak
             </Button>
           </div>
         </div>
