@@ -11,18 +11,84 @@ on:
       - 'feature/**'
       - 'bugfix/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  # 1. Frontend Web Platform & Shared UI
+  web:
+    name: Web Platform & Shared UI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: 'pnpm'
 
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm exec nx build web
+      - name: Install Workspace Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck Shared UI Package
+        run: ./node_modules/.bin/tsc -p packages/shared-ui/tsconfig.json --noEmit
+
+      - name: Typecheck Web Platform
+        run: ./node_modules/.bin/tsc -p apps/web/tsconfig.json --noEmit
+
+      - name: Build Web Platform
+        run: pnpm exec nx build web
+
+  # 2. Golang Backend Microservices
+  backend:
+    name: Golang Backend Microservices
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go 1.23
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Download & Tidy Dependencies
+        run: go mod tidy
+
+      - name: Run Go Unit Tests
+        run: go test -v ./...
+
+      - name: Compile Go Server Binary
+        run: CGO_ENABLED=0 go build -v -ldflags="-w -s" -o /dev/null ./cmd/server/main.go
+
+  # 3. Mobile POS (React Native Expo)
+  mobile-pos:
+    name: Mobile POS (Expo TypeScript)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Install Workspace Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck Mobile POS
+        run: ./node_modules/.bin/tsc -p apps/mobile-pos/tsconfig.json --noEmit
