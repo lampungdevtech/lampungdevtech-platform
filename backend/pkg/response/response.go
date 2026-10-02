@@ -61,3 +61,10 @@ func InternalError(c *fiber.Ctx, message string, err interface{}) error {
 		Error:   err,
 	})
 }
+
+func TooManyRequests(c *fiber.Ctx, message string) error {
+	return c.Status(fiber.StatusTooManyRequests).JSON(BaseResponse{
+		Success: false,
+		Message: message,
+	})
+}

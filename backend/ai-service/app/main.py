@@ -22,9 +22,17 @@ app = FastAPI(
     version="1.0.0"
 )
 
+cors_origins_env = settings.dict().get("CORS_ALLOWED_ORIGINS", "") if hasattr(settings, "CORS_ALLOWED_ORIGINS") else ""
+if cors_origins_env:
+    allowed_origins = [o.strip() for o in cors_origins_env.split(",") if o.strip()]
+elif settings.APP_ENV == "production":
+    allowed_origins = ["https://lampungdev.tech", "https://www.lampungdev.tech"]
+else:
+    allowed_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

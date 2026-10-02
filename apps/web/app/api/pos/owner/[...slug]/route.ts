@@ -198,11 +198,21 @@ async function tryProxyToGo(req: NextRequest, path: string, bodyText?: string) {
     const timeout = setTimeout(() => controller.abort(), 1000);
     const targetUrl = `${GO_BACKEND_URL}/${path}${req.nextUrl.search}`;
 
+    const internalSecret = process.env.INTERNAL_SERVICE_SECRET || '';
+    const authHeader = req.headers.get('authorization');
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (internalSecret) {
+      headers['X-Internal-Secret'] = internalSecret;
+    }
+    if (authHeader) {
+      headers['Authorization'] = authHeader;
+    }
+
     const res = await fetch(targetUrl, {
       method: req.method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: bodyText,
       signal: controller.signal,
     });
