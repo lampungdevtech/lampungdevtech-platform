@@ -61,3 +61,27 @@ func InternalError(c *fiber.Ctx, message string, err interface{}) error {
 		Error:   err,
 	})
 }
+
+func TooManyRequests(c *fiber.Ctx, message string) error {
+	return c.Status(fiber.StatusTooManyRequests).JSON(BaseResponse{
+		Success: false,
+		Message: message,
+	})
+}
+
+func Success(c *fiber.Ctx, statusCode int, message string, data interface{}) error {
+	return c.Status(statusCode).JSON(BaseResponse{
+		Success: true,
+		Message: message,
+		Data:    data,
+	})
+}
+
+func Error(c *fiber.Ctx, statusCode int, message string) error {
+	return c.Status(statusCode).JSON(BaseResponse{
+		Success: false,
+		Message: message,
+		Error:   message,
+	})
+}
+

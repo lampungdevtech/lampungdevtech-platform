@@ -40,6 +40,7 @@ func main() {
 		jwtSecret = "lampungdevtech-super-secret-pos-jwt-key-2026"
 		log.Println("[WARNING SECURITY] Menjalankan development mode dengan default development JWT_SECRET.")
 	}
+	rabbitmqURL := getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
 	rabbitmqExchange := getEnv("RABBITMQ_EXCHANGE", "pos.events")
 
 	log.Println("==================================================")
@@ -78,7 +79,8 @@ func main() {
 	orderService := services.NewOrderService(orderRepo, lockRepo, eventPublisher)
 	shiftService := services.NewShiftService(shiftRepo, eventPublisher)
 	ownerService := services.NewOwnerService(ownerRepo)
-	aiSummarizerSvc := services.NewAISummarizerService(os.Getenv("GEMINI_API_KEY"))
+	aiEngineURL := getEnv("AI_ENGINE_URL", "http://localhost:8000")
+	aiSummarizerSvc := services.NewAISummarizerService(os.Getenv("GEMINI_API_KEY"), aiEngineURL)
 	edutechService := services.NewEdutechService(edutechRepo, lockRepo, aiSummarizerSvc)
 
 	// 4. Inisialisasi Driving Adapters (HTTP Handlers & Fiber Web Framework)

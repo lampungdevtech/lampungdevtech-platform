@@ -1,10 +1,15 @@
 package http
 
 import (
+	"os"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/lampungdevtech/backend/pkg/response"
 )
 
 type RouterConfig struct {
@@ -22,9 +27,18 @@ func SetupRouter(app *fiber.App, cfg RouterConfig) {
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${status} - ${latency} ${method} ${path}\n",
 	}))
+
+	corsOrigins := os.Getenv("CORS_ALLOWED_ORIGINS")
+	if corsOrigins == "" {
+		if os.Getenv("APP_ENV") == "production" {
+			corsOrigins = "https://lampungdevtech.my.id,https://www.lampungdevtech.my.id,https://lampungdev.tech,https://www.lampungdev.tech"
+		} else {
+			corsOrigins = "*"
+		}
+	}
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowOrigins: corsOrigins,
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization, X-Internal-Secret",
 		AllowMethods: "GET, POST, PUT, PATCH, DELETE, OPTIONS",
 	}))
 
@@ -41,9 +55,10 @@ func SetupRouter(app *fiber.App, cfg RouterConfig) {
 	// Public Routes
 	api.Post("/auth/login", cfg.AuthHandler.CashierLogin)
 
-	// Owner Portal Routes (BI, Financial, Inventory, Staff, Promos, Operations)
+	// Owner Portal Routes (Dilindungi JWT Owner atau Internal Service Secret)
 	if cfg.OwnerHandler != nil {
-		owner := api.Group("/owner")
+		internalSecret := os.Getenv("INTERNAL_SERVICE_SECRET")
+		owner := api.Group("/owner", OwnerOrServiceAuthMiddleware(cfg.JWTSecret, internalSecret))
 
 		// 1. Finance & Bank Accounts
 		owner.Get("/finance/summary", cfg.OwnerHandler.GetFinancialSummary)
@@ -107,6 +122,18 @@ func SetupRouter(app *fiber.App, cfg RouterConfig) {
 
 	// EdTech & Bimbel Operations Vertical Module
 	if cfg.EdutechHandler != nil {
+		// Rate Limiter khusus AI Endpoint (Maksimal 20 request/menit per IP)
+		aiLimiter := limiter.New(limiter.Config{
+			Max:        20,
+			Expiration: 1 * time.Minute,
+			KeyGenerator: func(c *fiber.Ctx) string {
+				return c.IP()
+			},
+			LimitReached: func(c *fiber.Ctx) error {
+				return response.TooManyRequests(c, "Rate limit terlampaui. Maksimal 20 permintaan evaluasi AI per menit untuk mencegah eksploitasi kuota.")
+			},
+		})
+
 		edu := app.Group("/api/v1/edutech")
 		edu.Get("/programs", cfg.EdutechHandler.GetPrograms)
 		edu.Get("/classes", cfg.EdutechHandler.GetClasses)
@@ -114,7 +141,7 @@ func SetupRouter(app *fiber.App, cfg RouterConfig) {
 		edu.Get("/parent/dashboard/:parentId", cfg.EdutechHandler.GetParentDashboard)
 		edu.Post("/teacher/attendance", cfg.EdutechHandler.RecordAttendance)
 		edu.Post("/teacher/homework", cfg.EdutechHandler.SubmitHomework)
-		edu.Post("/ai/summarize", cfg.EdutechHandler.GenerateAISummary)
+		edu.Post("/ai/summarize", aiLimiter, cfg.EdutechHandler.GenerateAISummary)
 		edu.Get("/admin/capacity", cfg.EdutechHandler.GetAdminCapacity)
 	}
 }

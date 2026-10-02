@@ -142,3 +142,23 @@ VALUES
      '["Fraction Addition", "Visual Geometry", "Mathematical Communication"]'::jsonb)
 ON CONFLICT (id) DO NOTHING;
 
+-- 17. Pos AI Inventory Demand Forecasts (Smart Restock Predictions)
+INSERT INTO pos_ai_inventory_forecasts (id, branch_id, ingredient_id, forecast_date, predicted_consumption, unit, confidence_score, recommendation_type, rationale)
+VALUES 
+    ('FC-01', '01-MAIN', 'MAT-01', CURRENT_DATE + INTERVAL '1 day', 4.80, 'kg', 0.9250, 'CRITICAL_RESTOCK', 
+     'Pola lonjakan transaksi Sabtu-Minggu diproyeksikan mengonsumsi 4.8 kg biji kopi arabika. Stok saat ini 3.5 kg berada di bawah ambang batas kritis.'),
+    ('FC-02', '01-MAIN', 'MAT-02', CURRENT_DATE + INTERVAL '1 day', 16.50, 'liter', 0.9420, 'CRITICAL_RESTOCK', 
+     'Konsumsi susu fresh milk diproyeksikan mencapai 16.5 liter. Stok gudang 6.0 liter diprediksi habis sebelum jam 15:00 WIB.'),
+    ('FC-03', '01-MAIN', 'MAT-04', CURRENT_DATE + INTERVAL '1 day', 3.20, 'liter', 0.8800, 'NORMAL', 
+     'Stok gula aren organik 18.0 liter masih mencukupi kebutuhan 5 hari ke depan.')
+ON CONFLICT (id) DO NOTHING;
+
+-- 18. AI Interaction & Observability Logs
+INSERT INTO ai_interaction_logs (id, tenant_id, service_name, model_name, prompt_tokens, completion_tokens, latency_ms, cache_hit, status)
+VALUES 
+    ('AILOG-01', 'tenant-lampung-01', 'edutech_summarizer', 'gemini-1.5-flash', 342, 115, 680, FALSE, 'SUCCESS'),
+    ('AILOG-02', 'tenant-lampung-01', 'edutech_summarizer', 'gemini-1.5-flash', 340, 112, 12, TRUE, 'SUCCESS'),
+    ('AILOG-03', 'MCH-01', 'pos_forecast', 'heuristic-ml-v1', 120, 45, 145, FALSE, 'SUCCESS')
+ON CONFLICT (id) DO NOTHING;
+
+

@@ -305,7 +305,7 @@ export async function createProduct(
     totalSales: 0,
     digitalDetails: productData.digitalDetails || {
       deliveryMethod: 'ACCESS_LINK',
-      accessLink: 'https://lampungdev.tech',
+      accessLink: 'https://lampungdevtech.my.id',
       accessInstructions: 'Silakan buka tautan di atas untuk mengakses produk.',
     },
     createdAt: new Date(),

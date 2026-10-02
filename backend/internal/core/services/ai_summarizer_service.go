@@ -17,19 +17,28 @@ import (
 )
 
 type aiSummarizerService struct {
-	apiKey     string
-	httpClient *http.Client
+	apiKey      string
+	aiEngineURL string
+	httpClient  *http.Client
 }
 
-// NewAISummarizerService creates an AI summarizer service
-func NewAISummarizerService(apiKey string) ports.AISummarizerService {
+// NewAISummarizerService creates an AI summarizer service with multi-tier fallback
+func NewAISummarizerService(apiKey string, aiEngineURL ...string) ports.AISummarizerService {
 	if apiKey == "" {
 		apiKey = os.Getenv("GEMINI_API_KEY")
 	}
+	engineURL := ""
+	if len(aiEngineURL) > 0 && aiEngineURL[0] != "" {
+		engineURL = strings.TrimRight(aiEngineURL[0], "/")
+	} else if envURL := os.Getenv("AI_ENGINE_URL"); envURL != "" {
+		engineURL = strings.TrimRight(envURL, "/")
+	}
+
 	return &aiSummarizerService{
-		apiKey: apiKey,
+		apiKey:      apiKey,
+		aiEngineURL: engineURL,
 		httpClient: &http.Client{
-			Timeout: 15 * time.Second,
+			Timeout: 12 * time.Second,
 		},
 	}
 }
@@ -42,7 +51,16 @@ func (s *aiSummarizerService) GenerateWeeklySummary(ctx context.Context, req dom
 		req.WeekNumber = 38
 	}
 
-	// Try calling Gemini API if API key is set
+	// 1. Try calling dedicated Python AI Engine microservice if configured
+	if s.aiEngineURL != "" {
+		res, err := s.callAIEngine(ctx, req)
+		if err == nil && res != nil {
+			return res, nil
+		}
+		log.Printf("[AISummarizer] AI Engine at %s error (%v). Falling back to direct LLM.\n", s.aiEngineURL, err)
+	}
+
+	// 2. Try calling Gemini API directly if API key is set
 	if s.apiKey != "" {
 		res, err := s.callGeminiAPI(ctx, req)
 		if err == nil && res != nil {
@@ -51,7 +69,7 @@ func (s *aiSummarizerService) GenerateWeeklySummary(ctx context.Context, req dom
 		log.Printf("[AISummarizer] Gemini API call returned: %v. Using intelligent fallback synthesizer.\n", err)
 	}
 
-	// High quality child-friendly fallback synthesizer
+	// 3. High quality child-friendly fallback synthesizer
 	summary, tips, concepts := s.synthesizeProgress(req)
 	return &domain.AIProgressResponse{
 		StudentID:        req.StudentID,
@@ -59,6 +77,37 @@ func (s *aiSummarizerService) GenerateWeeklySummary(ctx context.Context, req dom
 		ConceptsMastered: concepts,
 		EncouragementTip: tips,
 	}, nil
+}
+
+func (s *aiSummarizerService) callAIEngine(ctx context.Context, req domain.AIProgressRequest) (*domain.AIProgressResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/ai/summarize", s.aiEngineURL)
+	bodyBytes, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(bodyBytes))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+
+	resp, err := s.httpClient.Do(httpReq)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("ai engine status %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	var res domain.AIProgressResponse
+	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
 
 func (s *aiSummarizerService) callGeminiAPI(ctx context.Context, req domain.AIProgressRequest) (*domain.AIProgressResponse, error) {

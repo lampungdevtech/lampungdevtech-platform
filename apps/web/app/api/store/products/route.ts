@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       type: type || 'DIGITAL',
       digitalDetails: digitalDetails || {
         deliveryMethod: 'ACCESS_LINK',
-        accessLink: 'https://lampungdev.tech',
+        accessLink: 'https://lampungdevtech.my.id',
         accessInstructions: 'Silakan buka tautan di atas untuk mengakses produk digital ini.',
       },
     });
