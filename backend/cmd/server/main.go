@@ -78,7 +78,8 @@ func main() {
 	orderService := services.NewOrderService(orderRepo, lockRepo, eventPublisher)
 	shiftService := services.NewShiftService(shiftRepo, eventPublisher)
 	ownerService := services.NewOwnerService(ownerRepo)
-	aiSummarizerSvc := services.NewAISummarizerService(os.Getenv("GEMINI_API_KEY"))
+	aiEngineURL := getEnv("AI_ENGINE_URL", "http://localhost:8000")
+	aiSummarizerSvc := services.NewAISummarizerService(os.Getenv("GEMINI_API_KEY"), aiEngineURL)
 	edutechService := services.NewEdutechService(edutechRepo, lockRepo, aiSummarizerSvc)
 
 	// 4. Inisialisasi Driving Adapters (HTTP Handlers & Fiber Web Framework)

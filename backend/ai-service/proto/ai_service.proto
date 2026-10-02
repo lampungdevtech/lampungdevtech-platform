@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package ai;
+
+option go_package = "github.com/lampungdevtech/backend/pkg/proto/ai";
+
+// AIService defines high-performance internal RPC methods for AI & ML workloads
+service AIService {
+  // GenerateWeeklySummary generates an encouraging, child-friendly weekly evaluation for EdTech
+  rpc GenerateWeeklySummary (AIProgressRequest) returns (AIProgressResponse);
+
+  // PredictInventoryDemand predicts raw material consumption for cafe POS branches
+  rpc PredictInventoryDemand (DemandForecastRequest) returns (DemandForecastResponse);
+
+  // SemanticSearch performs vector similarity search across curriculum & SOP embeddings
+  rpc SemanticSearch (SemanticSearchRequest) returns (SemanticSearchResponse);
+}
+
+message AIProgressRequest {
+  string student_id = 1;
+  string student_name = 2;
+  int32 week_number = 3;
+  int32 homework_score = 4;
+  string teacher_notes = 5;
+  repeated string concepts = 6;
+}
+
+message AIProgressResponse {
+  string student_id = 1;
+  string summary = 2;
+  repeated string concepts_mastered = 3;
+  string encouragement_tip = 4;
+  bool is_cached = 5;
+}
+
+message DemandForecastRequest {
+  string branch_id = 1;
+  string ingredient_id = 2;
+  string ingredient_name = 3;
+  double current_stock = 4;
+  double min_threshold = 5;
+  string unit = 6;
+  int32 forecast_days = 7;
+}
+
+message DemandForecastResponse {
+  string ingredient_id = 1;
+  double predicted_consumption = 2;
+  string unit = 3;
+  double confidence_score = 4;
+  string recommendation_type = 5; // NORMAL, UPCOMING_DEPLETION, CRITICAL_RESTOCK
+  string rationale = 6;
+}
+
+message SemanticSearchRequest {
+  string query = 1;
+  string program_id = 2;
+  int32 top_k = 3;
+}
+
+message SearchResultItem {
+  string id = 1;
+  string module_title = 2;
+  string content_chunk = 3;
+  double score = 4;
+}
+
+message SemanticSearchResponse {
+  repeated SearchResultItem results = 1;
+  int32 total_found = 2;
+}

@@ -1,6 +1,14 @@
 -- Inisialisasi Skema Database POS Kafe (PostgreSQL 16)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Inisialisasi Ekstensi Vektor (pgvector) untuk AI Embeddings & Semantic Search
+DO $$ 
+BEGIN 
+    CREATE EXTENSION IF NOT EXISTS vector;
+EXCEPTION WHEN OTHERS THEN 
+    RAISE NOTICE 'Ekstensi vector tidak tersedia di server PostgreSQL ini, melewati aktivasi pgvector.';
+END $$;
+
 -- 1. Tabel Usaha / Merchant (Owner Kafe)
 CREATE TABLE IF NOT EXISTS merchants (
     id VARCHAR(26) PRIMARY KEY, -- ULID
@@ -369,5 +377,65 @@ CREATE INDEX IF NOT EXISTS idx_edutech_classes_prog ON edutech_classes(program_i
 CREATE INDEX IF NOT EXISTS idx_edutech_enrollments_parent ON edutech_enrollments(parent_id, class_id);
 CREATE INDEX IF NOT EXISTS idx_edutech_homework_enroll ON edutech_homework_logs(enrollment_id);
 CREATE INDEX IF NOT EXISTS idx_edutech_summary_student ON edutech_weekly_summaries(student_id, week_number);
+
+-- ==========================================================
+-- MODUL AI & MACHINE LEARNING (PGVECTOR & PREDICTIVE ANALYTICS)
+-- ==========================================================
+
+-- 24. Tabel Embedding Vektor Kurikulum STEM & SOP Kafe (RAG Knowledge Base)
+CREATE TABLE IF NOT EXISTS edutech_curriculum_vectors (
+    id VARCHAR(64) PRIMARY KEY,
+    program_id VARCHAR(64) REFERENCES edutech_programs(id) ON DELETE CASCADE,
+    module_title VARCHAR(255) NOT NULL,
+    content_chunk TEXT NOT NULL,
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+    embedding vector(768), -- Vektor 768 dimensi (Gemini text-embedding-004)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+DO $$
+BEGIN
+    CREATE INDEX IF NOT EXISTS idx_curriculum_vectors_hnsw 
+    ON edutech_curriculum_vectors 
+    USING hnsw (embedding vector_cosine_ops)
+    WITH (m = 16, ef_construction = 64);
+EXCEPTION WHEN OTHERS THEN
+    RAISE NOTICE 'Gagal membuat HNSW vector index (ekstensi vector belum aktif), melewati.';
+END $$;
+
+-- 25. Tabel Prediksi Kebutuhan Stok Bahan Baku Kafe (AI Demand Forecasting)
+CREATE TABLE IF NOT EXISTS pos_ai_inventory_forecasts (
+    id VARCHAR(64) PRIMARY KEY,
+    branch_id VARCHAR(26) NOT NULL REFERENCES branches(id) ON DELETE CASCADE,
+    ingredient_id VARCHAR(26) NOT NULL REFERENCES ingredients(id) ON DELETE CASCADE,
+    forecast_date DATE NOT NULL,
+    predicted_consumption NUMERIC(12, 2) NOT NULL,
+    unit VARCHAR(20) NOT NULL,
+    confidence_score NUMERIC(5, 4) NOT NULL DEFAULT 0.8500,
+    recommendation_type VARCHAR(50) NOT NULL DEFAULT 'NORMAL', -- 'CRITICAL_RESTOCK', 'UPCOMING_DEPLETION', 'NORMAL'
+    rationale TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 26. Tabel Log Audit & Metrik Performa AI (Token, Latency & Observability)
+CREATE TABLE IF NOT EXISTS ai_interaction_logs (
+    id VARCHAR(64) PRIMARY KEY,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'tenant-default',
+    service_name VARCHAR(64) NOT NULL, -- 'edutech_summarizer', 'pos_forecast', 'store_copywriter'
+    model_name VARCHAR(64) NOT NULL,    -- 'gemini-1.5-flash', 'heuristic-ml-v1'
+    prompt_tokens INT DEFAULT 0,
+    completion_tokens INT DEFAULT 0,
+    latency_ms INT DEFAULT 0,
+    cache_hit BOOLEAN DEFAULT FALSE,
+    status VARCHAR(32) DEFAULT 'SUCCESS', -- 'SUCCESS', 'FALLBACK', 'ERROR'
+    error_message TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indeks Kinerja AI
+CREATE INDEX IF NOT EXISTS idx_forecast_branch_date ON pos_ai_inventory_forecasts(branch_id, forecast_date);
+CREATE INDEX IF NOT EXISTS idx_forecast_ingredient ON pos_ai_inventory_forecasts(ingredient_id);
+CREATE INDEX IF NOT EXISTS idx_ai_logs_tenant_created ON ai_interaction_logs(tenant_id, created_at DESC);
+
 
 

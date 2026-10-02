@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  # 1. Relational Database untuk Orders, Shift Ledger, Branches & CapEx
+  # 1. Relational Database untuk Orders, Shift Ledger, Branches & CapEx (dengan pgvector)
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     container_name: pos_postgres
     restart: always
     environment:
@@ -72,6 +72,29 @@ services:
       - '9090:9090'
     volumes:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  # 7. Python AI & ML Engine Microservice (FastAPI + LangChain + gRPC)
+  ai-engine:
+    build:
+      context: ./backend/ai-service
+      dockerfile: Dockerfile
+    container_name: pos_ai_engine
+    restart: always
+    environment:
+      - APP_ENV=development
+      - PORT=8000
+      - GRPC_PORT=50051
+      - DATABASE_URL=postgres://pos_user:pos_password@postgres:5432/pos_db?sslmode=disable
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    ports:
+      - '8000:8000'   # FastAPI REST Swagger / OpenAPI Docs
+      - '50051:50051' # Internal gRPC Port
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
 
 volumes:
   postgres_data:
