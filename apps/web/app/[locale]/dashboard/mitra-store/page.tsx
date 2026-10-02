@@ -266,7 +266,7 @@ export default function MitraStoreDashboardPage() {
             <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
               <span>Domain Toko:</span>
               <code className="text-primary font-mono bg-muted px-1.5 py-0.5 rounded">
-                lampungdev.tech/store/{store.slug}
+                lampungdevtech.my.id/store/{store.slug}
               </code>
             </p>
           </div>

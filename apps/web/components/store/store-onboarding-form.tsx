@@ -293,7 +293,7 @@ export function StoreOnboardingForm() {
               </div>
               <div className="flex items-center rounded-md border bg-background focus-within:ring-2 focus-within:ring-primary focus-within:border-primary">
                 <span className="px-3 text-xs text-muted-foreground select-none border-r bg-muted/40 py-2.5">
-                  lampungdev.tech/store/
+                  lampungdevtech.my.id/store/
                 </span>
                 <input
                   id="slug"

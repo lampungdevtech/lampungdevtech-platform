@@ -31,7 +31,7 @@ func SetupRouter(app *fiber.App, cfg RouterConfig) {
 	corsOrigins := os.Getenv("CORS_ALLOWED_ORIGINS")
 	if corsOrigins == "" {
 		if os.Getenv("APP_ENV") == "production" {
-			corsOrigins = "https://lampungdev.tech,https://www.lampungdev.tech"
+			corsOrigins = "https://lampungdevtech.my.id,https://www.lampungdevtech.my.id,https://lampungdev.tech,https://www.lampungdev.tech"
 		} else {
 			corsOrigins = "*"
 		}

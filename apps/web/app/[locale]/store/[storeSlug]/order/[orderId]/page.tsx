@@ -201,7 +201,7 @@ export default function OrderStatusAndAccessPage() {
               {/* Ilustrasi Barcode QRIS */}
               <div className="p-6 bg-white rounded-2xl border inline-block mx-auto shadow-inner">
                 <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://lampungdev.tech/demo-qris"
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https://lampungdevtech.my.id/demo-qris"
                   alt="QRIS Code"
                   className="w-48 h-48 mx-auto"
                 />

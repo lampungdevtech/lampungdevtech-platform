@@ -26,7 +26,12 @@ cors_origins_env = settings.dict().get("CORS_ALLOWED_ORIGINS", "") if hasattr(se
 if cors_origins_env:
     allowed_origins = [o.strip() for o in cors_origins_env.split(",") if o.strip()]
 elif settings.APP_ENV == "production":
-    allowed_origins = ["https://lampungdev.tech", "https://www.lampungdev.tech"]
+    allowed_origins = [
+        "https://lampungdevtech.my.id",
+        "https://www.lampungdevtech.my.id",
+        "https://lampungdev.tech",
+        "https://www.lampungdev.tech"
+    ]
 else:
     allowed_origins = ["*"]
 
