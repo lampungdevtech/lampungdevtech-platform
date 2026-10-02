@@ -40,6 +40,7 @@ func main() {
 		jwtSecret = "lampungdevtech-super-secret-pos-jwt-key-2026"
 		log.Println("[WARNING SECURITY] Menjalankan development mode dengan default development JWT_SECRET.")
 	}
+	rabbitmqURL := getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
 	rabbitmqExchange := getEnv("RABBITMQ_EXCHANGE", "pos.events")
 
 	log.Println("==================================================")
